@@ -1,0 +1,50 @@
+{
+  "models": [
+    {
+      "id": "ei3016",
+      "label": "EI3016",
+      "testers": [
+        {
+          "id": "board",
+          "label": "Board Tester",
+          "fails": [
+            { "id": "r53",
+             "label": "R53",
+              "group": "Resistors",
+              "info": "Possible Solutions in order:\n➜ Replace R53\n➜ Replace U3\n➜ Replace U1" },
+            { "id": "u3",
+                "label": "U3",
+                "group": "U's",
+                "info": "Possible Solutions in order:\n➜ Retest make sure the disc is placed properly in the tester (not under PCB)\n➜ Replace U3" }
+          ]
+        },
+        {
+          "id": "smoke",
+          "label": "Smoke Box",
+          "fails": [
+            { "id": "flag-check",
+             "label": "Flag Check",
+              "info": "Possible solutions in order:\n➜ Shorts on small nodes by batteries\n➜ Chamber IR Led/Photo diode misaligned (Check if PD is bent)" }
+          ]
+        },
+        {
+          "id": "function",
+          "label": "Function Tester",
+          "fails": [
+            { "id": "bv",
+             "label": "Battery Voltage",
+              "info": "Possible Solutions in order:\n➜ Re-test using a diffrent plate\n➜ Batteries Soldered incorrectly, open unit and reapply solder\n➜ Batteries faulty, desolder batteries and send back to board tester" },
+            { "id": "3.5",
+             "label": "3.5v",
+              "info": "Possible Solutions in order:\n➜ Re-test using a diffrent plate\n➜ RTV applied incorectly on piezo disc, open unit and reapply RTV\n➜ Piezo disc faulty, replace piezo disc and send back to board tester" }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "calculatorModels": [
+    { "id": "EI3016", "label": "EI3016", "rows": 10, "packs": 21, "units": 4 },
+    { "id": "EI3024", "label": "EI3024", "rows": 9, "packs": 21, "units": 4 }
+  ]
+}

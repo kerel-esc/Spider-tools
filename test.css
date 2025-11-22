@@ -1,0 +1,220 @@
+/* ===========================
+   AUTO LIGHT + DARK THEME
+   =========================== */
+:root {
+    color-scheme: light dark;
+
+    --bg-light: #ffffff;
+    --fg-light: #000000;
+    --muted-light: #555;
+
+    --bg-dark: #000000;
+    --fg-dark: #ffffff;
+    --muted-dark: #bdbdbd;
+
+    --accent-light: #ED1B24;
+    --accent-dark: #ED1B24;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg: var(--bg-light);
+        --fg: var(--fg-light);
+        --muted: var(--muted-light);
+        --accent: var(--accent-light);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: var(--bg-dark);
+        --fg: var(--fg-dark);
+        --muted: var(--muted-dark);
+        --accent: var(--accent-dark);
+    }
+}
+
+/* ===========================
+   BASE
+   =========================== */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, Roboto, Segoe UI, Helvetica, Arial, sans-serif;
+}
+
+.app {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===========================
+   HEADER
+   =========================== */
+header {
+    padding: 4px 0 2px;
+    text-align: center;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.logo {
+    width: clamp(40px, 18vw, 70px);
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ===========================
+   MAIN CONTENT
+   =========================== */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+}
+
+.frame {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    max-height: calc(100svh - 150px);
+    padding: 12px;
+    border-radius: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.frame h2 {
+    margin-top: 0;
+    font-size: 19px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+/* ===========================
+   FORM ELEMENTS
+   =========================== */
+label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.row {
+    display: grid;
+    gap: 6px;
+}
+
+input[type=number],
+select {
+    width: 100%;
+    font-size: 15px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.12);
+    color: var(--fg);
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid var(--accent);
+}
+
+/* ===========================
+   MINI TABS
+   =========================== */
+.mini-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.mini-tabs .tabbtn {
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+/* ===========================
+   ACTION BUTTONS
+   =========================== */
+.btnrow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tabbtn {
+    appearance: none;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    width: 100%;
+    border-radius: 12px;
+    border: 2px solid #333;
+    background: transparent;
+    color: var(--fg);
+}
+
+.tabbtn[aria-selected="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--fg);
+}
+
+/* ===========================
+   BOTTOM NAV
+   =========================== */
+nav.tabs {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid #333;
+}
+
+/* ===========================
+   ERROR TEXT
+   =========================== */
+.err {
+    color: #ff6b6b;
+}
+
+/* ===========================
+   TRUE HIDE CLASS (fixes spacing)
+   =========================== */
+.hidden {
+    display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+}
+#failExplanation {
+    white-space: pre-line;
+}
+
