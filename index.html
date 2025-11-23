@@ -4,21 +4,37 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <title>Spider Tools</title>
+
+    <!-- PWA manifest + icons -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="style.css"></link>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app" role="application">
         <header>
             <img src="logo.png" alt="Ei Logo" class="logo">
         </header>
+
         <main>
-            <section id="content" class="frame" role="region" aria-live="polite" aria-atomic="true"></section>
+            <section
+                id="content"
+                class="frame"
+                role="region"
+                aria-live="polite"
+                aria-atomic="true">
+            </section>
         </main>
+
         <nav class="tabs" role="tablist" aria-label="Primary">
-            <button class="tabbtn" role="tab" data-target="fails" aria-selected="true">Fails</button>
-            <button class="tabbtn" role="tab" data-target="calculators" aria-selected="false">Calculators</button>
+            <button class="tabbtn" role="tab" data-target="fails" aria-selected="true">
+                Fails
+            </button>
+            <button class="tabbtn" role="tab" data-target="calculators" aria-selected="false">
+                Calculators
+            </button>
         </nav>
     </div>
 
@@ -26,30 +42,44 @@
     <template id="tpl-fails">
         <div style="width:100%">
             <h2>Fails</h2>
-            <p class="muted">Pick a Model → Tester → Fail<br> or use Model → Search for quick lookup</p>
+            <p class="muted">
+                Pick a Model → Tester → Fail<br>
+                or use Model → Search for quick lookup
+            </p>
+
             <div class="row" style="width:min(480px,100%);text-align:left;">
                 <label>
                     Model
                     <select id="modelSelect"></select>
                 </label>
+
                 <label>
                     Tester
                     <select id="testerSelect" disabled>
                         <option value="" selected disabled>Select a tester</option>
                     </select>
                 </label>
+
                 <label>
                     Fail
                     <select id="failSelect" disabled>
                         <option value="" selected disabled>Select a fail</option>
                     </select>
                 </label>
-                <div id="failExplanation" class="muted">Choose a fail to see an explanation.</div>
+
+                <div id="failExplanation" class="muted">
+                    Choose a fail to see an explanation.
+                </div>
+
                 <div id="failSearchArea" class="fail-search hidden">
                     <h3 class="muted">Search fails</h3>
-                        <input id="failSearchInput" type="text" placeholder="Type to search..." autocomplete="off">
-                <div id="failSearchResults"></div>
-            </div>
+                    <input
+                        id="failSearchInput"
+                        type="text"
+                        placeholder="Type to search..."
+                        autocomplete="off">
+                    <div id="failSearchResults"></div>
+                </div>
             </div>
         </div>
     </template>
@@ -58,34 +88,43 @@
     <template id="tpl-calculators">
         <div>
             <h2>Calculators</h2>
-            <p class="muted">Select a <strong>model</strong>. For custom numbers, choose <strong>CUSTOM</strong>.</p>
+            <p class="muted">
+                Select a <strong>model</strong>. For custom numbers, choose <strong>CUSTOM</strong>.
+            </p>
+
             <div class="row" style="width:min(500px,100%);text-align:left;">
                 <label>
                     Model
                     <select id="calcModel"></select>
                 </label>
+
                 <div id="modelSummary" class="muted"></div>
 
                 <div class="mini-tabs" role="tablist" aria-label="Calculators">
-                    <button class="tabbtn" role="tab" data-calc="pallet" aria-selected="true">Pallet Count</button>
-                    <button class="tabbtn" role="tab" data-calc="eod" aria-selected="false">End of Day</button>
+                    <button class="tabbtn" role="tab" data-calc="pallet" aria-selected="true">
+                        Pallet Count
+                    </button>
+                    <button class="tabbtn" role="tab" data-calc="eod" aria-selected="false">
+                        End of Day
+                    </button>
                 </div>
 
                 <div id="calcForm"></div>
+
                 <div class="btnrow">
-                    <button id="calcGo" class="tabbtn" style="text-transform:none;font-size:16px;">Calculate</button>
+                    <button
+                        id="calcGo"
+                        class="tabbtn"
+                        style="text-transform:none;font-size:16px;">
+                        Calculate
+                    </button>
                 </div>
+
                 <div id="calcResult" class="muted">Result will appear here.</div>
             </div>
         </div>
     </template>
-    <script src="script.js">
-    if ("serviceWorker" in navigator) {
-     navigator.serviceWorker.register("./service-worker.js")
-    .catch(err => console.error("Service Worker failed:", err));
-    }
-    </script>
 
-
+    <script src="script.js"></script>
 </body>
 </html>

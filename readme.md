@@ -1,105 +1,194 @@
-🕷️ Spiders Tools
+# 🕷️ Spider Tools
 
-A lightweight, mobile-friendly web application built to support Spiders, when manufacturing smoke sensors, CO₂ sensors, and other safety devices.
-This tool streamlines daily tasks, provides quick access to failure information, and simplifies palletization calculations during production.
+Spider Tools is a lightweight, mobile-friendly web app built to support **Spiders** on the production line when manufacturing smoke sensors, CO₂ sensors, and other safety devices.
 
-Access this website application on: https://kerel-esc.github.io/Spider-tools/
+It is designed for **fast, reliable use on the factory floor**:
 
-🔧 1. Fail Lookup Tool
+- Quick lookup of tester fails and troubleshooting steps  
+- Simple palletisation and end-of-day calculations  
+- Works offline as a PWA (installable app)  
+- No backend server required – just static files
 
-Designed for rapid troubleshooting during production testing.
+👉 Live version: https://kerel-esc.github.io/Spider-tools/
 
-What it does
+---
 
-Select a model, then a tester, then a specific fail condition.
+## 🔧 1. Fail Lookup Tool
 
-instantly displays clear troubleshooting steps and diagnostic info.
+The Fail Lookup tool is built for **rapid troubleshooting** during production testing.
 
-Helps line leaders quickly guide operators and resolve issues.
+### What it does
 
-Reads from an optional spiders-data.json so teams can update fail info without modifying the code.
+1. Select a **model**  
+2. Select a **tester**  
+3. Select a **fail**  
 
-📦 2. Production Calculators
+The app then:
 
-Two tools that assist Spiders in managing daily output and pallet accuracy.
+- Displays clear troubleshooting actions and diagnostic notes  
+- Helps line leaders and Spiders quickly guide operators  
+- Keeps the information consistent across shifts
 
-Pallet Count Calculator
+### Data source
 
-Given your rows, packs, units, and current pallet state, it calculates:
+Fail info is loaded from:
 
-Total units
+1. **`spiders-data.json`** (if present)  
+2. Otherwise, an internal **default model** in `script.js`
 
-Full pallets
+This means:
 
-Remaining rows, packs, units
+- Teams can update fails, testers, and models **without touching the JavaScript**
+- If `spiders-data.json` is missing, the app still works using built-in defaults
 
-Overflow conversion (units → packs → rows)
+### Fail Search
 
-End-of-Day (EOD) Calculator
+Once a model is selected, you can:
 
-Helps Spiders close out the shift accurately.
-With the current open pallet & production numbers, it determines:
+- Type into the **Search fails** box  
+- The app searches across:
+  - Fail labels  
+  - Groups (e.g. “Resistors”)  
+  - Description text  
 
-How many pallets went DTW
+Clicking a search result automatically:
 
-Amount used to complete the first pallet
+- Selects the right tester  
+- Selects the matching fail  
+- Scrolls to the explanation
 
-Breakdown of the new open pallet
+---
 
-Total remaining units
+## 📦 2. Production Calculators
+
+Spider Tools includes two calculators to help manage **daily output** and **pallet accuracy**.
+
+### 2.1 Pallet Count Calculator
+
+Given:
+
+- Rows per pallet  
+- Packs per row  
+- Units per pack  
+- Current pallet state:
+  - Full rows  
+  - Packs in current row  
+  - Loose units  
+
+It calculates:
+
+- **Total units** on the pallet  
+- **Full pallets** (if you use it with totals)  
+- Remaining rows, packs, and units  
+- Correctly handles overflow:
+  - Units → Packs → Rows
+
+### 2.2 End-of-Day (EOD) Calculator
+
+Given:
+
+- Rows per pallet  
+- Packs per row  
+- Units per pack  
+- Units currently on the open pallet  
+- Today’s production (units built)  
+
+It determines:
+
+- How many pallets went **DTW** (Down To Warehouse)  
+- How many units were used to complete the first pallet (if there was an open one)  
+- The **new open pallet breakdown**:
+  - Rows / packs / units  
+  - Open pallet unit count  
+
+### Calculator features
 
 Both calculators support:
 
-Built-in preset configurations for typical products
+- Preset configurations for common products  
+- A **CUSTOM** mode to enter any configuration  
+- **BigInt** arithmetic, so large counts stay accurate  
+- Automatic UI updates when:
+  - Switching models  
+  - Switching between Pallet and EOD modes
 
-A fully CUSTOM mode for new or special builds
+---
 
-Large-number safe calculations using BigInt
+## 💡 How It Works
 
-Automatic updates when switching models or calculator modes
+Spider Tools is a **purely static** web app:
 
-💡 How It Works
+- No backend, databases, or authentication
+- Everything runs in the browser
+- Data and logic live in these core files:
 
-This app is completely static—no backend server required.
+| File              | Purpose                                               |
+| ----------------- | ----------------------------------------------------- |
+| `index.html`      | Structure + templates for Fails & Calculators screens |
+| `script.js`       | App logic, routing, fail engine, and calculators      |
+| `style.css`       | UI styling, layout, responsiveness, light/dark theme  |
+| `spiders-data.json` (optional) | Custom fails, testers, and models             |
+| `manifest.json`   | PWA metadata (name, icons, colours)                   |
+| `service-worker.js` | Offline caching and app shell behaviour            |
 
-Files
-File	Purpose
-index.html	Structure + templates for each screen
-script.js	App logic, calculators, routing, fail engine
-style.css	UI styling, layout, light/dark theme
-spiders-data.json (optional)	Custom data for fails, testers, and models
-Routing
+### Routing
 
-Uses simple hash-based URLs:
+The app uses **hash-based routing**:
 
-#fails → Fail Lookup
+- `#fails` → Fail Lookup  
+- `#calculators` → Production Calculators  
 
-#calculators → Production Calculators
+Changing the hash updates the main view with a short slide/fade animation.
 
-Data Loading
+### Data loading
 
-Attempts to load spiders-data.json.
-If not present, the app uses built-in defaults.
+On startup:
 
-🎨 UI & Usability
+1. The app loads built-in default data from `script.js`.
+2. It then tries to fetch `spiders-data.json`.
+3. If the file exists and is valid:
+   - `models` and `calculatorModels` from the JSON override the defaults.
+4. If it doesn’t exist:
+   - The app silently keeps using the defaults.
 
-Mobile-first design (built for production floor use)
+---
 
-Large, tap-friendly controls
+## 🎨 UI & Usability
 
-Clear separation between tasks
+The interface is designed for **busy, noisy production environments**:
 
-Automatically enforces correct numeric input
+- Mobile-first layout  
+- Large, tap-friendly buttons  
+- Simple two-tab navigation (Fails / Calculators)  
+- Clear separation between tasks  
+- Automatic enforcement of **whole-number** inputs  
+- Auto **light/dark theme** depending on system settings  
+- Smooth button-press animation for tactile feedback  
+- Fail search list is scrollable on small screens
 
-Clean layout that works in noisy or fast-paced environments
+---
 
-Auto light/dark theme support
+## 🚀 Deployment
 
-🚀 Deployment
+Because it’s static, you can deploy Spider Tools almost anywhere:
 
-Because it’s 100% static, you can deploy it anywhere:
+- GitHub Pages  
+- Local intranet / file share  
+- Any static hosting (Netlify, Vercel, S3, on-prem web server, etc.)
 
-🤝 Contributing
+Basic steps:
 
-Feel free to submit improvements, add fail logic, or propose new model/tester presets.
-This project is meant to grow with the production line and adapt to new sensor types.
+1. Build the following structure:
+
+   ```text
+   / (root)
+   ├─ index.html
+   ├─ script.js
+   ├─ style.css
+   ├─ service-worker.js
+   ├─ manifest.json
+   ├─ logo.png
+   ├─ spiders-data.json      (optional, recommended)
+   └─ icons/
+      ├─ icon-192.png
+      └─ icon-512.png

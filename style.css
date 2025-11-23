@@ -316,6 +316,7 @@ nav.tabs {
     margin: 0 !important;
     overflow: hidden !important;
 }
+
 /* ===========================
    Fail Search Area
    =========================== */
@@ -341,6 +342,11 @@ nav.tabs {
     display: flex;
     flex-direction: column;
     gap: 6px;
+
+    /* New: keep long result lists scrollable */
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 2px;
 }
 
 /* Each search result */

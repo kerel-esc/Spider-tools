@@ -20,51 +20,64 @@ let currentScreen = 'fails';
 // Data: defaults + optional JSON override
 // -------------------------------------
 
+// Default in-app data, used if spiders-data.json is missing
 const DEFAULT_DATA = {
-    models: ['Alpha', 'Beta', 'Gamma'],
-    testers: [
-        { id: 'board', label: 'Board Tester' },
-        { id: 'smoke', label: 'Smoke Box' },
-        { id: 'function', label: 'Function Tester' }
+    models: [
+        {
+            id: 'generic',
+            label: 'Generic Model',
+            testers: [
+                {
+                    id: 'board',
+                    label: 'Board Tester',
+                    fails: [
+                        {
+                            id: 'no-boot',
+                            label: 'No Boot',
+                            info: 'Check power rails, shorts to ground, and firmware programming.'
+                        },
+                        {
+                            id: 'usb-fail',
+                            label: 'USB Fail',
+                            info: 'Inspect connector solder joints and ESD diodes; verify 5V and data lines.'
+                        }
+                    ]
+                },
+                {
+                    id: 'smoke',
+                    label: 'Smoke Box',
+                    fails: [
+                        {
+                            id: 'flag-check',
+                            label: 'Flag Check',
+                            info: 'Flag sensor not detected or flag out of position. Verify flag is seated, check optical sensor alignment, ensure wiring/connector is secure, and clean dust from the sensor window.'
+                        },
+                        {
+                            id: 'leak',
+                            label: 'Leak Detected',
+                            info: 'Inspect gasket, hose connections, and enclosure screws; re-seat and retest.'
+                        }
+                    ]
+                },
+                {
+                    id: 'function',
+                    label: 'Function Tester',
+                    fails: [
+                        {
+                            id: 'calibration',
+                            label: 'Calibration Out',
+                            info: 'Run calibration procedure. If still out, verify reference standard and replace the suspect module.'
+                        },
+                        {
+                            id: 'button-dead',
+                            label: 'Button Not Responding',
+                            info: 'Check switch flex cable and connector; test continuity; replace switch if open.'
+                        }
+                    ]
+                }
+            ]
+        }
     ],
-    fails: {
-        board: [
-            {
-                id: 'no-boot',
-                label: 'No Boot',
-                info: 'Check power rails, shorts to ground, and firmware programming.'
-            },
-            {
-                id: 'usb-fail',
-                label: 'USB Fail',
-                info: 'Inspect connector solder joints and ESD diodes; verify 5V and data lines.'
-            }
-        ],
-        smoke: [
-            {
-                id: 'flag-check',
-                label: 'Flag Check',
-                info: 'Flag sensor not detected or flag out of position. Verify flag is seated, check optical sensor alignment, and ensure wiring/connector is secure. Clean dust from sensor window.'
-            },
-            {
-                id: 'leak',
-                label: 'Leak Detected',
-                info: 'Inspect gasket, hose connections, and enclosure screws; re-seat and retest.'
-            }
-        ],
-        function: [
-            {
-                id: 'calibration',
-                label: 'Calibration Out',
-                info: 'Run calibration procedure. If still out, verify reference standard and replace suspect module.'
-            },
-            {
-                id: 'button-dead',
-                label: 'Button Not Responding',
-                info: 'Check switch flex cable and connector; test continuity; replace switch if open.'
-            }
-        ]
-    },
     calculatorModels: [
         { id: 'EI3016', label: 'EI3016', rows: 10, packs: 21, units: 4 },
         { id: 'EI3024', label: 'EI3024', rows: 12, packs: 20, units: 4 },
@@ -76,15 +89,25 @@ let APP_DATA = DEFAULT_DATA;
 
 /**
  * Attempt to load spiders-data.json and merge it over DEFAULT_DATA.
+ * If the file is missing or invalid, we silently keep DEFAULT_DATA.
  */
 async function tryLoadData() {
     try {
         const res = await fetch('spiders-data.json', { cache: 'no-store' });
 
-        if (res.ok) {
-            const json = await res.json();
-            APP_DATA = { ...DEFAULT_DATA, ...json };
-        }
+        if (!res.ok) return;
+
+        const json = await res.json();
+
+        APP_DATA = {
+            ...DEFAULT_DATA,
+            ...json,
+            // Ensure we always have arrays for these keys
+            models: Array.isArray(json.models) ? json.models : DEFAULT_DATA.models,
+            calculatorModels: Array.isArray(json.calculatorModels)
+                ? json.calculatorModels
+                : DEFAULT_DATA.calculatorModels
+        };
     } catch (_) {
         // Ignore and use defaults
     }
@@ -129,7 +152,7 @@ function initFails() {
     const failSelect = content.querySelector('#failSelect');
     const explanation = content.querySelector('#failExplanation');
 
-    // Optional search elements (only if you've added them in the HTML template)
+    // Optional search elements
     const searchArea = content.querySelector('#failSearchArea');
     const searchInput = content.querySelector('#failSearchInput');
     const searchResults = content.querySelector('#failSearchResults');
@@ -169,7 +192,7 @@ function initFails() {
         failSelect.disabled = true;
         failSelect.innerHTML =
             '<option value="" disabled selected>Select a fail</option>';
-        explanation.textContent = 'Pick a tester next or search';
+        explanation.textContent = 'Pick a tester next or search.';
 
         // Show and reset search area
         if (searchArea) {
@@ -287,7 +310,7 @@ function initFails() {
             }
 
             if (matches.length === 0) {
-                searchResults.innerHTML = `<div class="muted">No results found</div>`;
+                searchResults.innerHTML = `<div class="muted">No results found.</div>`;
                 return;
             }
 
@@ -769,4 +792,17 @@ async function init() {
     });
 }
 
+// Kick everything off
 init();
+
+// =====================================
+// Service worker registration
+// =====================================
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker
+            .register('./service-worker.js')
+            .catch(err => console.error('Service Worker registration failed:', err));
+    });
+}
