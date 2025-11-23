@@ -1,11 +1,9 @@
-/* ==========================================
-   THEME: Auto Light + Dark
-   ========================================== */
-
+/* ===========================
+   AUTO LIGHT + DARK THEME
+   =========================== */
 :root {
     color-scheme: light dark;
 
-    /* Base palette for each theme */
     --bg-light: #ffffff;
     --fg-light: #000000;
     --muted-light: #555;
@@ -14,12 +12,10 @@
     --fg-dark: #ffffff;
     --muted-dark: #bdbdbd;
 
-    /* Accent colour (same for both themes) */
     --accent-light: #ED1B24;
     --accent-dark: #ED1B24;
 }
 
-/* Automatically pick the right set based on user preference */
 @media (prefers-color-scheme: light) {
     :root {
         --bg: var(--bg-light);
@@ -38,16 +34,14 @@
     }
 }
 
-/* ==========================================
-   BASE / RESET
-   ========================================== */
-
+/* ===========================
+   BASE
+   =========================== */
 * {
     box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -62,15 +56,14 @@ body {
     flex-direction: column;
 }
 
-/* ==========================================
+/* ===========================
    HEADER
-   ========================================== */
-
+   =========================== */
 header {
     padding: 4px 0 2px;
     text-align: center;
     background: var(--bg);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .logo {
@@ -80,27 +73,22 @@ header {
     margin: 0 auto;
 }
 
-/* ==========================================
-   MAIN CONTENT AREA
-   ========================================== */
-
+/* ===========================
+   MAIN CONTENT
+   =========================== */
 main {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* avoids vertical jump when content changes */
+    align-items: flex-start;
     padding: 8px;
 }
 
-/* The "card" that holds the current screen */
 .frame {
     width: 100%;
     max-width: 520px;
-
-    /* let the whole page scroll instead of a scrollable inner card */
     padding: 12px;
     border-radius: 10px;
-
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -111,15 +99,29 @@ main {
     font-size: 19px;
 }
 
-/* Subtle text used for hints / explanations */
 .muted {
     color: var(--muted);
 }
 
-/* ==========================================
-   FORM ELEMENTS
-   ========================================== */
+/* Page transition: Fails <-> Calculators */
+#content > * {
+    animation: fadeSlideIn 200ms ease-out;
+}
 
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===========================
+   FORM ELEMENTS
+   =========================== */
 label {
     font-size: 13px;
     font-weight: 600;
@@ -130,18 +132,15 @@ label {
     gap: 6px;
 }
 
-/* Inputs & selects
-   - Use font-size >= 16px to prevent iOS zoom-on-focus.
-   - Background is transparent-ish so it blends in with both themes.
-*/
+/* Inputs & selects - Safari-friendly, no zoom */
 input[type=number],
 select {
     width: 100%;
     font-size: 16px; /* >=16px prevents iOS zoom */
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.12);
     color: var(--fg);
 }
 
@@ -150,7 +149,7 @@ select:focus {
     outline: 2px solid var(--accent);
 }
 
-/* Show \n characters as actual new lines in the fail explanation area */
+/* Show \n as new lines in fail explanations */
 #failExplanation {
     white-space: pre-line;
 }
@@ -165,10 +164,9 @@ select:focus {
     margin: 2px 0;
 }
 
-/* ==========================================
-   MINI TABS (inside Calculators)
-   ========================================== */
-
+/* ===========================
+   MINI TABS
+   =========================== */
 .mini-tabs {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -181,47 +179,60 @@ select:focus {
     border-radius: 10px;
 }
 
-/* ==========================================
-   ACTION BUTTONS
-   ========================================== */
-
+/* ===========================
+   BUTTONS + ANIMATIONS
+   =========================== */
 .btnrow {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* Reusable button style for both bottom nav and mini-tabs */
 .tabbtn {
     appearance: none;
     padding: 12px;
     font-size: 15px;
     font-weight: 700;
-    letter-spacing: 0.3px;
+    letter-spacing: .3px;
     width: 100%;
     border-radius: 12px;
     border: 2px solid #333;
     background: transparent;
     color: var(--fg);
+    cursor: pointer;
+
+    /* smooth hover/active transitions */
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        transform 80ms ease,
+        box-shadow 150ms ease;
 }
 
-/* Highlight the currently selected tab button */
+/* Selected state (bottom tabs + mini tabs) */
 .tabbtn[aria-selected="true"] {
     background: var(--accent);
     border-color: var(--accent);
     color: var(--bg);
+    box-shadow: 0 0 10px rgba(237, 27, 36, 0.45);
 }
 
-/* Optional alternate style (not currently different, but kept for clarity) */
+/* Press / tap animation */
+.tabbtn:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 4px rgba(237, 27, 36, 0.6);
+}
+
+/* Secondary style (if used) */
 .btn-secondary {
     background: transparent;
     color: var(--fg);
 }
 
-/* ==========================================
-   BOTTOM NAVIGATION
-   ========================================== */
-
+/* ===========================
+   BOTTOM NAV
+   =========================== */
 nav.tabs {
     position: sticky;
     bottom: 0;
@@ -234,20 +245,16 @@ nav.tabs {
     border-top: 1px solid #333;
 }
 
-/* ==========================================
+/* ===========================
    ERROR TEXT
-   ========================================== */
-
+   =========================== */
 .err {
     color: #ff6b6b;
 }
 
-/* ==========================================
-   UTILITY: .hidden
-   ==========================================
-   True "collapse and vanish" – useful when disabling config blocks for presets.
-*/
-
+/* ===========================
+   TRUE HIDE CLASS
+   =========================== */
 .hidden {
     display: none !important;
     height: 0 !important;
