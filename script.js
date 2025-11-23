@@ -2,25 +2,33 @@
 // Spiders Tools – Application Logic
 // =====================================
 //
-// This file controls:
-//   • Loading data (local defaults + spiders-data.json override)
-//   • "Fails" screen: model → tester → fail explanation (+ search)
-//   • "Calculators" screen: pallet-count and end-of-day helpers
-//   • Simple hash-based navigation between tabs
-//   • Visual transitions between screens + button press animation
+// Features:
+//   • Data loading from fails-data.json + calculator-data.json (optional)
+//   • "Fails" screen: model → tester → fail explanation + model-local search
+//   • "Calculators" screen: pallet-count and end-of-day calculators
+//   • Swipe gesture to switch calculator modes
+//   • Haptic feedback (where supported)
+//   • Hash-based navigation + "last screen" memory
+//   • PWA: install banner, version checker, About modal metadata
 //
+
+const APP_VERSION = '1.1.0';
+
+// Storage keys
+const STORAGE_KEYS = {
+    lastScreen: 'spiders:lastScreen',
+    lastModelId: 'spiders:lastModelId',
+    a2hsDismissed: 'spiders:a2hsDismissed'
+};
 
 // Main content container where templates are rendered
 const content = document.getElementById('content');
-
-// Track which screen is currently shown so we can animate direction
 let currentScreen = 'fails';
 
 // -------------------------------------
-// Data: defaults + optional JSON override
+// Data: defaults + optional JSON overrides
 // -------------------------------------
 
-// Default in-app data, used if spiders-data.json is missing
 const DEFAULT_DATA = {
     models: [
         {
@@ -82,35 +90,65 @@ const DEFAULT_DATA = {
         { id: 'EI3016', label: 'EI3016', rows: 10, packs: 21, units: 4 },
         { id: 'EI3024', label: 'EI3024', rows: 12, packs: 20, units: 4 },
         { id: 'GENERIC', label: 'Generic', rows: 10, packs: 10, units: 1 }
-    ]
+    ],
+    meta: {
+        failsVersion: 'built-in',
+        calcVersion: 'built-in'
+    }
 };
 
 let APP_DATA = DEFAULT_DATA;
 
 /**
- * Attempt to load spiders-data.json and merge it over DEFAULT_DATA.
- * If the file is missing or invalid, we silently keep DEFAULT_DATA.
+ * Attempt to load fails-data.json and calculator-data.json.
+ * Both are optional – if either is missing, defaults stay in place.
  */
 async function tryLoadData() {
+    let models = DEFAULT_DATA.models;
+    let calculatorModels = DEFAULT_DATA.calculatorModels;
+    let failsVersion = DEFAULT_DATA.meta.failsVersion;
+    let calcVersion = DEFAULT_DATA.meta.calcVersion;
+
+    // Load fails-data.json
     try {
-        const res = await fetch('spiders-data.json', { cache: 'no-store' });
-
-        if (!res.ok) return;
-
-        const json = await res.json();
-
-        APP_DATA = {
-            ...DEFAULT_DATA,
-            ...json,
-            // Ensure we always have arrays for these keys
-            models: Array.isArray(json.models) ? json.models : DEFAULT_DATA.models,
-            calculatorModels: Array.isArray(json.calculatorModels)
-                ? json.calculatorModels
-                : DEFAULT_DATA.calculatorModels
-        };
+        const res = await fetch('fails-data.json', { cache: 'no-store' });
+        if (res.ok) {
+            const json = await res.json();
+            if (Array.isArray(json.models)) {
+                models = json.models;
+            }
+            if (typeof json.version === 'string') {
+                failsVersion = json.version;
+            }
+        }
     } catch (_) {
-        // Ignore and use defaults
+        // Ignore and keep defaults
     }
+
+    // Load calculator-data.json
+    try {
+        const res = await fetch('calculator-data.json', { cache: 'no-store' });
+        if (res.ok) {
+            const json = await res.json();
+            if (Array.isArray(json.calculatorModels)) {
+                calculatorModels = json.calculatorModels;
+            }
+            if (typeof json.version === 'string') {
+                calcVersion = json.version;
+            }
+        }
+    } catch (_) {
+        // Ignore and keep defaults
+    }
+
+    APP_DATA = {
+        models,
+        calculatorModels,
+        meta: {
+            failsVersion,
+            calcVersion
+        }
+    };
 }
 
 function data() {
@@ -118,11 +156,18 @@ function data() {
 }
 
 // =====================================
+// Haptics (vibration helper)
+// =====================================
+
+function vibrate(pattern = 20) {
+    if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+    }
+}
+
+// =====================================
 // Button press animation helper
 // =====================================
-//
-// Adds and removes a small "pressed" class for a nicer click/tap feeling.
-//
 
 function attachPressAnimation(element) {
     if (!element) return;
@@ -134,7 +179,7 @@ function attachPressAnimation(element) {
     element.addEventListener('mouseup', remove);
     element.addEventListener('mouseleave', remove);
 
-    // Touch support for phones/tablets
+    // Touch support
     element.addEventListener('touchstart', add, { passive: true });
     element.addEventListener('touchend', remove);
     element.addEventListener('touchcancel', remove);
@@ -148,16 +193,16 @@ function initFails() {
     const appData = data();
 
     const modelSelect = content.querySelector('#modelSelect');
-    const testerSelect = content.querySelector('#testerSelect');
+    const testerSelect = content.querySelector('#testerSelect'); // hidden, used for logic
+    const testerButtons = content.querySelector('#testerButtons');
     const failSelect = content.querySelector('#failSelect');
     const explanation = content.querySelector('#failExplanation');
 
-    // Optional search elements
     const searchArea = content.querySelector('#failSearchArea');
     const searchInput = content.querySelector('#failSearchInput');
     const searchResults = content.querySelector('#failSearchResults');
 
-    // Initial state for dropdowns
+    // Populate models
     modelSelect.innerHTML =
         '<option value="" selected disabled>Select a model</option>' +
         appData.models
@@ -168,38 +213,93 @@ function initFails() {
     failSelect.disabled = true;
     explanation.textContent = 'Select a model to begin.';
 
-    // Hide search area until a model is selected (if it exists)
+    // Hide search area initially
     if (searchArea) {
         searchArea.classList.add('hidden');
         if (searchInput) searchInput.value = '';
         if (searchResults) searchResults.innerHTML = '';
     }
 
-    // When model changes, populate tester dropdown and reset the rest
+    function renderTesterButtons(model) {
+        testerButtons.innerHTML = '';
+
+        if (!model || !Array.isArray(model.testers)) {
+            testerSelect.disabled = true;
+            return;
+        }
+
+        const testers = model.testers;
+
+        testerSelect.innerHTML =
+            '<option value="" selected disabled>Select a tester</option>' +
+            testers
+                .map(t => `<option value="${t.id}">${t.label}</option>`)
+                .join('');
+
+        testerSelect.disabled = false;
+
+        testers.forEach((tester, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'tester-btn';
+            btn.textContent = tester.label;
+            btn.setAttribute('data-tester-id', tester.id);
+            btn.setAttribute('aria-pressed', 'false');
+            btn.setAttribute('role', 'tab');
+
+            attachPressAnimation(btn);
+
+            btn.addEventListener('click', () => {
+                testerSelect.value = tester.id;
+                testerSelect.dispatchEvent(new Event('change'));
+                vibrate(15);
+            });
+
+            testerButtons.appendChild(btn);
+
+            // If this is the only tester and no saved state, we could auto-select, but
+            // for now we leave control to the user.
+        });
+    }
+
+    function updateTesterButtonState(selectedTesterId) {
+        const buttons = testerButtons.querySelectorAll('.tester-btn');
+        buttons.forEach(btn => {
+            const isActive = btn.getAttribute('data-tester-id') === selectedTesterId;
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+
+    // Load last selected model (if any)
+    const savedModelId = localStorage.getItem(STORAGE_KEYS.lastModelId);
+    if (savedModelId && appData.models.some(m => m.id === savedModelId)) {
+        modelSelect.value = savedModelId;
+        modelSelect.dispatchEvent(new Event('change'));
+    }
+
+    // When model changes, reset tester/fails, and show search
     modelSelect.addEventListener('change', () => {
         const selectedModel = appData.models.find(
             model => model.id === modelSelect.value
         );
         if (!selectedModel) return;
 
-        testerSelect.innerHTML =
-            '<option value="" selected disabled>Select a tester</option>' +
-            selectedModel.testers
-                .map(tester => `<option value="${tester.id}">${tester.label}</option>`)
-                .join('');
+        localStorage.setItem(STORAGE_KEYS.lastModelId, selectedModel.id);
 
-        testerSelect.disabled = false;
+        renderTesterButtons(selectedModel);
+        testerSelect.value = '';
         failSelect.disabled = true;
         failSelect.innerHTML =
             '<option value="" disabled selected>Select a fail</option>';
         explanation.textContent = 'Pick a tester next or search.';
 
-        // Show and reset search area
         if (searchArea) {
             searchArea.classList.remove('hidden');
         }
         if (searchInput) searchInput.value = '';
         if (searchResults) searchResults.innerHTML = '';
+
+        vibrate(15);
     });
 
     // When tester changes, populate fail dropdown
@@ -249,6 +349,8 @@ function initFails() {
         explanation.textContent = fails.length
             ? 'Select a fail for details.'
             : 'No fails found for this tester.';
+
+        updateTesterButtonState(selectedTester.id);
     });
 
     // When fail changes, show explanation
@@ -268,10 +370,12 @@ function initFails() {
         );
 
         explanation.textContent = selectedFail ? selectedFail.info : '';
+
+        vibrate(20);
     });
 
     // ==============================
-    // Fail Search Feature (simple list)
+    // Fail Search (per-model)
     // ==============================
     if (searchInput && searchResults) {
         searchInput.addEventListener('input', () => {
@@ -279,7 +383,6 @@ function initFails() {
             searchResults.innerHTML = '';
 
             if (!query) {
-                // Empty search: nothing to show
                 return;
             }
 
@@ -287,14 +390,12 @@ function initFails() {
                 model => model.id === modelSelect.value
             );
             if (!selectedModel) {
-                // No model selected yet – cannot search
                 searchResults.innerHTML = `<div class="muted">Select a model first.</div>`;
                 return;
             }
 
             const matches = [];
 
-            // Search all testers and fails of this model
             for (const tester of selectedModel.testers) {
                 const fails = tester.fails || [];
                 for (const fail of fails) {
@@ -314,7 +415,6 @@ function initFails() {
                 return;
             }
 
-            // Build visual list of results
             for (const { tester, fail } of matches) {
                 const div = document.createElement('div');
                 div.className = 'search-result';
@@ -328,14 +428,14 @@ function initFails() {
                     testerSelect.value = tester.id;
                     testerSelect.dispatchEvent(new Event('change'));
 
-                    // Wait a moment for the fail dropdown to populate, then select
+                    // After fail list populated, select the fail
                     setTimeout(() => {
                         failSelect.value = fail.id;
                         failSelect.dispatchEvent(new Event('change'));
-
-                        // Scroll to the explanation area
                         explanation.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 50);
+
+                    vibrate(20);
                 });
 
                 searchResults.appendChild(div);
@@ -361,10 +461,11 @@ function initCalculators() {
     const modelSelect = content.querySelector('#calcModel');
     const modelSummary = content.querySelector('#modelSummary');
 
-    // Button press animation for mini-tabs & calculate button
+    // Button press animation
     miniTabs.forEach(attachPressAnimation);
     attachPressAnimation(calcButton);
 
+    // Populate calculator models
     modelSelect.innerHTML =
         appData.calculatorModels
             .map(model => `<option value="${model.id}">${model.label}</option>`)
@@ -385,6 +486,7 @@ function initCalculators() {
 
         renderForm(calcType);
         applyModelPreset();
+        vibrate(15);
     }
 
     function enforceIntegerInput(element) {
@@ -619,6 +721,8 @@ function initCalculators() {
                 <strong>${tidyUnits}</strong> unit(s)
             </p>
         `;
+
+        vibrate(30);
     }
 
     function calcEod() {
@@ -686,6 +790,8 @@ function initCalculators() {
                 <li>Open Pallet Count: <strong>${remainderAfter}</strong></li>
             </ul>
         `;
+
+        vibrate(30);
     }
 
     function calculate() {
@@ -699,41 +805,81 @@ function initCalculators() {
         });
     }
 
+    // Tab switching
     miniTabs.forEach(button => {
         button.addEventListener('click', () => {
             setActiveCalc(button.dataset.calc);
         });
     });
 
-    calcButton.addEventListener('click', calculate);
+    // Button click
+    calcButton.addEventListener('click', () => {
+        calculate();
+    });
 
+    // Model change
     modelSelect.addEventListener('change', () => {
         renderForm(getActiveCalcType());
         applyModelPreset();
+        vibrate(15);
     });
 
+    // Initialise
     setActiveCalc('pallet');
     modelSelect.value = (appData.calculatorModels[0]?.id) || 'CUSTOM';
     applyModelPreset();
+
+    // Swipe gesture to switch calculator mode
+    const gestureArea = content.querySelector('.view');
+    if (gestureArea) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let tracking = false;
+
+        gestureArea.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) return;
+            tracking = true;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        gestureArea.addEventListener('touchend', (e) => {
+            if (!tracking) return;
+            tracking = false;
+
+            const touch = e.changedTouches[0];
+            const dx = touch.clientX - touchStartX;
+            const dy = touch.clientY - touchStartY;
+
+            if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) {
+                return;
+            }
+
+            const currentType = getActiveCalcType();
+
+            if (dx < 0 && currentType !== 'eod') {
+                setActiveCalc('eod');
+            } else if (dx > 0 && currentType !== 'pallet') {
+                setActiveCalc('pallet');
+            }
+        }, { passive: true });
+    }
 }
 
 // =====================================
 // Bottom Navigation & Simple Routing
 // =====================================
-//
-// Adds slide/fade animation when switching between screens.
-//
 
 document
     .querySelectorAll('nav.tabs .tabbtn')
     .forEach(button => {
-        // Button press animation for bottom nav
         attachPressAnimation(button);
 
         button.addEventListener('click', () => {
             const target = button.dataset.target;
             location.hash = '#' + target;
             load(target);
+            vibrate(15);
         });
     });
 
@@ -744,7 +890,12 @@ function load(name) {
     const tpl = document.getElementById('tpl-' + name);
     if (!tpl) return;
 
-    // Decide direction of animation based on where we are and where we're going
+    const validScreens = ['fails', 'calculators'];
+    if (!validScreens.includes(name)) return;
+
+    // Save last screen preference
+    localStorage.setItem(STORAGE_KEYS.lastScreen, name);
+
     let transitionClass = 'view--fade';
     if (currentScreen === 'fails' && name === 'calculators') {
         transitionClass = 'view--slide-up';
@@ -754,7 +905,6 @@ function load(name) {
 
     currentScreen = name;
 
-    // Wrap template content in a .view div so CSS can animate it
     const wrapper = document.createElement('div');
     wrapper.className = `view ${transitionClass}`;
     wrapper.appendChild(tpl.content.cloneNode(true));
@@ -773,62 +923,189 @@ function load(name) {
     if (name === 'calculators') initCalculators();
 }
 
-async function init() {
-    await tryLoadData();
+// =====================================
+// Service Worker Registration & Updates
+// =====================================
 
-    const rawHash = location.hash || '#fails';
-    const hashName = rawHash.replace('#', '');
+let newWorkerPending = null;
 
-    const validScreens = ['fails', 'calculators'];
-    const initialScreen = validScreens.includes(hashName) ? hashName : 'fails';
+function setupUpdateBanner(registration) {
+    const updateBanner = document.getElementById('updateBanner');
+    const updateBtn = document.getElementById('updateNowBtn');
 
-    currentScreen = initialScreen;
-    load(initialScreen);
+    if (!updateBanner || !updateBtn) return;
 
-    window.addEventListener('hashchange', () => {
-        const currentHash = (location.hash || '#fails').replace('#', '');
-        const screen = validScreens.includes(currentHash) ? currentHash : 'fails';
-        load(screen);
+    function showBanner(worker) {
+        newWorkerPending = worker;
+        updateBanner.classList.remove('hidden');
+        updateBtn.addEventListener('click', () => {
+            if (newWorkerPending) {
+                newWorkerPending.postMessage({ type: 'SKIP_WAITING' });
+                vibrate(20);
+            }
+        }, { once: true });
+    }
+
+    if (registration.waiting) {
+        showBanner(registration.waiting);
+    }
+
+    registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+
+        newWorker.addEventListener('statechange', () => {
+            if (
+                newWorker.state === 'installed' &&
+                navigator.serviceWorker.controller
+            ) {
+                showBanner(newWorker);
+            }
+        });
+    });
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
     });
 }
-
-// Kick everything off
-init();
-
-// =====================================
-// Service worker registration
-// =====================================
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker
             .register('./service-worker.js')
+            .then(reg => {
+                setupUpdateBanner(reg);
+            })
             .catch(err => console.error('Service Worker registration failed:', err));
     });
 }
+
 // =====================================
-// Floating Info Button Modal
+// Add to Home Screen Banner
 // =====================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    const infoBtn = document.getElementById("infoBtn");
-    const modal = document.getElementById("aboutModal");
-    const closeBtn = document.getElementById("closeAbout");
+let deferredInstallPrompt = null;
+
+function setupInstallBanner() {
+    const installBanner = document.getElementById('installBanner');
+    const installNowBtn = document.getElementById('installNowBtn');
+    const installDismissBtn = document.getElementById('installDismissBtn');
+
+    if (!installBanner || !installNowBtn || !installDismissBtn) return;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent default browser mini-infobar
+        e.preventDefault();
+        deferredInstallPrompt = e;
+
+        const dismissed = localStorage.getItem(STORAGE_KEYS.a2hsDismissed) === '1';
+        if (!dismissed) {
+            installBanner.classList.remove('hidden');
+            vibrate(20);
+        }
+    });
+
+    installNowBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+            localStorage.setItem(STORAGE_KEYS.a2hsDismissed, '1');
+        }
+        installBanner.classList.add('hidden');
+        vibrate(20);
+    });
+
+    installDismissBtn.addEventListener('click', () => {
+        localStorage.setItem(STORAGE_KEYS.a2hsDismissed, '1');
+        installBanner.classList.add('hidden');
+        vibrate(15);
+    });
+}
+
+// =====================================
+// About Modal behaviour
+// =====================================
+
+function setupAboutModal() {
+    const infoBtn = document.getElementById('infoBtn');
+    const modal = document.getElementById('aboutModal');
+    const closeBtn = document.getElementById('closeAbout');
+    const appVersionEl = document.getElementById('aboutAppVersion');
+    const failsVersionEl = document.getElementById('aboutFailsVersion');
+    const calcVersionEl = document.getElementById('aboutCalcVersion');
+    const iosHint = document.getElementById('iosInstallHint');
 
     if (!infoBtn || !modal || !closeBtn) return;
 
-    infoBtn.addEventListener("click", () => {
-        modal.classList.remove("hidden");
+    // Show version info
+    if (appVersionEl) appVersionEl.textContent = APP_VERSION;
+    if (failsVersionEl) failsVersionEl.textContent = data().meta.failsVersion || 'unknown';
+    if (calcVersionEl) calcVersionEl.textContent = data().meta.calcVersion || 'unknown';
+
+    // iOS hint visibility (simple user agent check)
+    const ua = navigator.userAgent || '';
+    const isIOS = /iphone|ipad|ipod/i.test(ua);
+    if (!isIOS && iosHint) {
+        iosHint.classList.add('hidden');
+    }
+
+    infoBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        vibrate(15);
     });
 
-    closeBtn.addEventListener("click", () => {
-        modal.classList.add("hidden");
+    closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        vibrate(10);
     });
 
-    // Close when tapping outside modal-content
-    modal.addEventListener("click", (e) => {
+    modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.classList.add("hidden");
+            modal.classList.add('hidden');
+            vibrate(10);
         }
     });
+}
+
+// =====================================
+// Initialisation
+// =====================================
+
+async function init() {
+    await tryLoadData();
+
+    // Decide initial screen:
+    const validScreens = ['fails', 'calculators'];
+
+    let initialScreen = 'calculators'; // default per your request
+
+    const rawHash = location.hash || '';
+    const hashName = rawHash.replace('#', '');
+
+    if (validScreens.includes(hashName)) {
+        initialScreen = hashName;
+    } else {
+        const stored = localStorage.getItem(STORAGE_KEYS.lastScreen);
+        if (stored && validScreens.includes(stored)) {
+            initialScreen = stored;
+        }
+    }
+
+    currentScreen = initialScreen;
+    load(initialScreen);
+
+    window.addEventListener('hashchange', () => {
+        const currentHash = (location.hash || '').replace('#', '');
+        const screen = validScreens.includes(currentHash) ? currentHash : 'calculators';
+        load(screen);
+    });
+
+    setupInstallBanner();
+    setupAboutModal();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
 });

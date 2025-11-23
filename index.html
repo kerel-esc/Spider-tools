@@ -15,8 +15,25 @@
 <body>
     <div class="app" role="application">
         <header>
+            <!-- Floating info button aligned to top-left -->
+            <button id="infoBtn" class="floating-info-btn" aria-label="About Spider Tools">?</button>
             <img src="logo.png" alt="Ei Logo" class="logo">
         </header>
+
+        <!-- Update banner (version checker) -->
+        <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
+            <span>New version available.</span>
+            <button id="updateNowBtn" class="banner-btn">Update</button>
+        </div>
+
+        <!-- Install banner (add to home screen) -->
+        <div id="installBanner" class="install-banner hidden" role="status" aria-live="polite">
+            <span>Install Spider Tools on this device?</span>
+            <div class="install-actions">
+                <button id="installNowBtn" class="banner-btn">Install</button>
+                <button id="installDismissBtn" class="banner-btn btn-secondary">Not now</button>
+            </div>
+        </div>
 
         <main>
             <section
@@ -28,17 +45,17 @@
             </section>
         </main>
 
-        <nav class="tabs" role="tablist" aria-label="Primary">
-            <button class="tabbtn" role="tab" data-target="fails" aria-selected="true">
-                Fails
+        <nav class="tabs" role="tablist" aria-label="Primary navigation">
+            <button class="tabbtn" role="tab" data-target="fails" aria-selected="false">
+                🧪 Fails
             </button>
             <button class="tabbtn" role="tab" data-target="calculators" aria-selected="false">
-                Calculators
+                🧮 Calculators
             </button>
         </nav>
     </div>
 
-    <!-- Fails -->
+    <!-- Fails Screen Template -->
     <template id="tpl-fails">
         <div style="width:100%">
             <h2>Fails</h2>
@@ -53,12 +70,15 @@
                     <select id="modelSelect"></select>
                 </label>
 
-                <label>
+                <!-- Visually replaced by tester buttons, but kept for accessibility -->
+                <label class="visually-hidden">
                     Tester
                     <select id="testerSelect" disabled>
                         <option value="" selected disabled>Select a tester</option>
                     </select>
                 </label>
+
+                <div id="testerButtons" class="tester-buttons" role="tablist" aria-label="Testers"></div>
 
                 <label>
                     Fail
@@ -84,7 +104,7 @@
         </div>
     </template>
 
-    <!-- Calculators -->
+    <!-- Calculators Screen Template -->
     <template id="tpl-calculators">
         <div>
             <h2>Calculators</h2>
@@ -124,30 +144,42 @@
             </div>
         </div>
     </template>
-    <!-- Floating Info Button -->
-    <button id="infoBtn" class="floating-info-btn">?</button>
 
     <!-- About Modal -->
-        <div id="aboutModal" class="modal hidden">
-            <div class="modal-content">
-                <h2>About Spider Tools</h2>
-                <p class="muted">A lightweight offline tool to support Spiders on the production line.</p>
+    <div id="aboutModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+        <div class="modal-content">
+            <h2 id="aboutTitle">About Spider Tools</h2>
+            <p class="muted">
+                A lightweight offline tool to support Spiders on the production line.
+            </p>
 
             <h3>Features</h3>
             <ul>
                 <li>Fail lookup (Model → Tester → Fail)</li>
                 <li>Pallet + End-of-Day calculators</li>
                 <li>Offline PWA support</li>
-                <li>Custom data via spiders-data.json</li>
+                <li>Custom data via <code>fails-data.json</code> and <code>calculator-data.json</code></li>
             </ul>
 
+            <h3>Build Info</h3>
+            <ul class="about-meta">
+                <li>App version: <span id="aboutAppVersion">-</span></li>
+                <li>Fails data: <span id="aboutFailsVersion">-</span></li>
+                <li>Calculator data: <span id="aboutCalcVersion">-</span></li>
+            </ul>
+
+            <h3>Install</h3>
+            <p class="muted" id="iosInstallHint">
+                On iOS: use the Share button and choose <strong>Add to Home Screen</strong>.
+            </p>
+
             <p class="muted" style="margin-top:15px;font-size:12px;">
-            Version 1.0 • Works offline • Made for Spiders 🕷️
+                Works offline • Made for Spiders 🕷️
             </p>
 
             <button id="closeAbout" class="tabbtn" style="margin-top:15px;">Close</button>
+        </div>
     </div>
-</div>
 
     <script src="script.js"></script>
 </body>

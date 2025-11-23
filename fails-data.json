@@ -1,4 +1,5 @@
 {
+  "version": "1.0.0",
   "models": [
     {
       "id": "ei3016",
@@ -51,10 +52,5 @@
         }
       ]
     }
-  ],
-
-  "calculatorModels": [
-    { "id": "EI3016", "label": "EI3016", "rows": 10, "packs": 21, "units": 4 },
-    { "id": "EI3024", "label": "EI3024", "rows": 9, "packs": 21, "units": 4 }
   ]
 }

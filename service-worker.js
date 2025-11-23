@@ -1,5 +1,5 @@
 // Cache name (change version to force refresh)
-const CACHE_NAME = 'spiders-tools-v2';
+const CACHE_NAME = 'spiders-tools-v3-1.1.0';
 
 // Files to cache for offline use
 const FILES_TO_CACHE = [
@@ -9,36 +9,38 @@ const FILES_TO_CACHE = [
   './script.js',
   './manifest.json',
   './logo.png'
-  // Note: spiders-data.json is intentionally NOT cached here.
-  // If it is missing, the app will use built-in defaults.
+  // fails-data.json and calculator-data.json are cached optionally
 ];
 
-// Install: cache files
-self.addEventListener("install", (event) => {
+// Install: cache core files + optional data files
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      // Cache the core static files
       await cache.addAll(FILES_TO_CACHE);
 
-      // Try to cache spiders-data.json if it exists
+      // Optionally cache fails-data.json
       try {
-        const response = await fetch("./spiders-data.json", { cache: "no-store" });
-        if (response.ok) {
-          await cache.put("./spiders-data.json", response.clone());
-          console.log("Cached spiders-data.json");
-        } else {
-          console.warn("spiders-data.json exists but could not be cached.");
+        const respFails = await fetch('./fails-data.json', { cache: 'no-store' });
+        if (respFails.ok) {
+          await cache.put('./fails-data.json', respFails.clone());
         }
-      } catch (err) {
-        // File missing or offline — safe to ignore
-        console.warn("Optional spiders-data.json not cached (not found or offline).");
+      } catch (_) {
+        // Safe to ignore if missing or offline
+      }
+
+      // Optionally cache calculator-data.json
+      try {
+        const respCalc = await fetch('./calculator-data.json', { cache: 'no-store' });
+        if (respCalc.ok) {
+          await cache.put('./calculator-data.json', respCalc.clone());
+        }
+      } catch (_) {
+        // Safe to ignore if missing or offline
       }
     })
   );
-
   self.skipWaiting();
 });
-
 
 // Activate: clear old caches
 self.addEventListener('activate', (event) => {
@@ -68,4 +70,11 @@ self.addEventListener('fetch', (event) => {
       );
     })
   );
+});
+
+// Allow page to trigger skipWaiting for updates
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

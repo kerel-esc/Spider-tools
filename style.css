@@ -64,6 +64,7 @@ body {
    ========================================== */
 
 header {
+    position: relative;
     padding: 4px 0 2px;
     text-align: center;
     background: var(--bg);
@@ -73,8 +74,7 @@ header {
 .logo {
     width: clamp(40px, 18vw, 70px);
     height: auto;
-    display: block;
-    margin: 0 auto;
+    display: inline-block;
 }
 
 /* ==========================================
@@ -244,7 +244,6 @@ select:focus {
     background: transparent;
     color: var(--fg);
 
-    /* Smooth hover / press transitions */
     transition:
         transform 220ms ease-out,
         box-shadow 220ms ease-out,
@@ -266,7 +265,7 @@ select:focus {
     transform: scale(0.97) translateY(1px);
 }
 
-/* Optional hover (desktop only, feels nice) */
+/* Optional hover (desktop only) */
 @media (hover: hover) {
     .tabbtn:hover,
     #calcGo:hover {
@@ -275,7 +274,7 @@ select:focus {
     }
 }
 
-/* Secondary style (same visuals, semantic hook) */
+/* Secondary style */
 .btn-secondary {
     background: transparent;
     color: var(--fg);
@@ -317,6 +316,21 @@ nav.tabs {
     overflow: hidden !important;
 }
 
+/* ==========================================
+   VISUALLY HIDDEN (ACCESSIBILITY)
+   ========================================== */
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    border: 0 !important;
+}
+
 /* ===========================
    Fail Search Area
    =========================== */
@@ -342,8 +356,6 @@ nav.tabs {
     display: flex;
     flex-direction: column;
     gap: 6px;
-
-    /* New: keep long result lists scrollable */
     max-height: 220px;
     overflow-y: auto;
     padding-right: 2px;
@@ -375,13 +387,50 @@ nav.tabs {
     color: var(--muted);
     font-size: 13px;
 }
-/* ===========================
+
+/* ==========================================
+   Tester Buttons (grouped visually)
+   ========================================== */
+
+.tester-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.tester-buttons .tester-btn {
+    flex: 1 1 auto;
+    min-width: 80px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background: rgba(0,0,0,0.12);
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        transform 160ms ease-out,
+        box-shadow 160ms ease-out,
+        background 160ms ease-out,
+        border-color 160ms ease-out;
+}
+
+.tester-buttons .tester-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+}
+
+/* ==========================================
    Floating Info Button
-   =========================== */
+   ========================================== */
 
 .floating-info-btn {
     position: fixed;
-    top: 20px;
+    top: 8px;
     left: 8px;
     width: 42px;
     height: 42px;
@@ -399,10 +448,9 @@ nav.tabs {
     justify-content: center;
 }
 
-
-/* ===========================
+/* ==========================================
    Modal Styling
-   =========================== */
+   ========================================== */
 
 .modal {
     position: fixed;
@@ -412,10 +460,6 @@ nav.tabs {
     justify-content: center;
     align-items: center;
     z-index: 9998;
-}
-
-.modal.hidden {
-    display: none !important;
 }
 
 .modal-content {
@@ -428,4 +472,62 @@ nav.tabs {
     border-radius: 14px;
     padding: 20px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+}
+
+.about-meta {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* ==========================================
+   Banners (Update & Install)
+   ========================================== */
+
+.update-banner,
+.install-banner {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 6px 10px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.update-banner {
+    background: #2e7d32;
+    color: #ffffff;
+}
+
+.install-banner {
+    background: #1f1f1f;
+    color: #ffffff;
+}
+
+.banner-btn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.install-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Ensure banners sit under header visually */
+#updateBanner,
+#installBanner {
+    box-sizing: border-box;
+}
+
+/* Small tweak for code in about section */
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
 }
