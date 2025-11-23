@@ -1,9 +1,11 @@
-/* ===========================
-   AUTO LIGHT + DARK THEME
-   =========================== */
+/* ==========================================
+   THEME: Auto Light + Dark
+   ========================================== */
+
 :root {
     color-scheme: light dark;
 
+    /* Base palette for each theme */
     --bg-light: #ffffff;
     --fg-light: #000000;
     --muted-light: #555;
@@ -12,10 +14,12 @@
     --fg-dark: #ffffff;
     --muted-dark: #bdbdbd;
 
+    /* Accent colour (same for both themes) */
     --accent-light: #ED1B24;
     --accent-dark: #ED1B24;
 }
 
+/* Automatically pick the right set based on user preference */
 @media (prefers-color-scheme: light) {
     :root {
         --bg: var(--bg-light);
@@ -34,14 +38,16 @@
     }
 }
 
-/* ===========================
-   BASE
-   =========================== */
+/* ==========================================
+   BASE / RESET
+   ========================================== */
+
 * {
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -56,14 +62,15 @@ html, body {
     flex-direction: column;
 }
 
-/* ===========================
+/* ==========================================
    HEADER
-   =========================== */
+   ========================================== */
+
 header {
     padding: 4px 0 2px;
     text-align: center;
     background: var(--bg);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .logo {
@@ -73,22 +80,24 @@ header {
     margin: 0 auto;
 }
 
-/* ===========================
-   MAIN CONTENT
-   =========================== */
+/* ==========================================
+   MAIN CONTENT AREA
+   ========================================== */
+
 main {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* stop vertical centering jumps */
+    align-items: flex-start; /* avoids vertical jump when content changes */
     padding: 8px;
 }
 
+/* The "card" that holds the current screen */
 .frame {
     width: 100%;
     max-width: 520px;
 
-    /* let the whole page scroll instead of inner frame */
+    /* let the whole page scroll instead of a scrollable inner card */
     padding: 12px;
     border-radius: 10px;
 
@@ -102,13 +111,15 @@ main {
     font-size: 19px;
 }
 
+/* Subtle text used for hints / explanations */
 .muted {
     color: var(--muted);
 }
 
-/* ===========================
+/* ==========================================
    FORM ELEMENTS
-   =========================== */
+   ========================================== */
+
 label {
     font-size: 13px;
     font-weight: 600;
@@ -119,15 +130,18 @@ label {
     gap: 6px;
 }
 
-/* Inputs & selects - Safari-friendly, no zoom */
+/* Inputs & selects
+   - Use font-size >= 16px to prevent iOS zoom-on-focus.
+   - Background is transparent-ish so it blends in with both themes.
+*/
 input[type=number],
 select {
     width: 100%;
     font-size: 16px; /* >=16px prevents iOS zoom */
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(0,0,0,0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.12);
     color: var(--fg);
 }
 
@@ -136,7 +150,7 @@ select:focus {
     outline: 2px solid var(--accent);
 }
 
-/* Show \n as new lines in fail explanations */
+/* Show \n characters as actual new lines in the fail explanation area */
 #failExplanation {
     white-space: pre-line;
 }
@@ -151,9 +165,10 @@ select:focus {
     margin: 2px 0;
 }
 
-/* ===========================
-   MINI TABS
-   =========================== */
+/* ==========================================
+   MINI TABS (inside Calculators)
+   ========================================== */
+
 .mini-tabs {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -166,21 +181,23 @@ select:focus {
     border-radius: 10px;
 }
 
-/* ===========================
+/* ==========================================
    ACTION BUTTONS
-   =========================== */
+   ========================================== */
+
 .btnrow {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
+/* Reusable button style for both bottom nav and mini-tabs */
 .tabbtn {
     appearance: none;
     padding: 12px;
     font-size: 15px;
     font-weight: 700;
-    letter-spacing: .3px;
+    letter-spacing: 0.3px;
     width: 100%;
     border-radius: 12px;
     border: 2px solid #333;
@@ -188,20 +205,23 @@ select:focus {
     color: var(--fg);
 }
 
+/* Highlight the currently selected tab button */
 .tabbtn[aria-selected="true"] {
     background: var(--accent);
     border-color: var(--accent);
     color: var(--bg);
 }
 
+/* Optional alternate style (not currently different, but kept for clarity) */
 .btn-secondary {
     background: transparent;
     color: var(--fg);
 }
 
-/* ===========================
-   BOTTOM NAV
-   =========================== */
+/* ==========================================
+   BOTTOM NAVIGATION
+   ========================================== */
+
 nav.tabs {
     position: sticky;
     bottom: 0;
@@ -214,16 +234,20 @@ nav.tabs {
     border-top: 1px solid #333;
 }
 
-/* ===========================
+/* ==========================================
    ERROR TEXT
-   =========================== */
+   ========================================== */
+
 .err {
     color: #ff6b6b;
 }
 
-/* ===========================
-   TRUE HIDE CLASS
-   =========================== */
+/* ==========================================
+   UTILITY: .hidden
+   ==========================================
+   True "collapse and vanish" – useful when disabling config blocks for presets.
+*/
+
 .hidden {
     display: none !important;
     height: 0 !important;
