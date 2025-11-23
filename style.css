@@ -381,8 +381,7 @@ nav.tabs {
 
 .floating-info-btn {
     position: fixed;
-    bottom: 90px;
-    right: 20px;
+    bottom: calc(90px + env(safe-area-inset-bottom));
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -392,11 +391,14 @@ nav.tabs {
     font-size: 24px;
     font-weight: 700;
     cursor: pointer;
-    z-index: 9999;
+    z-index: 10000;
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     display: flex;
     align-items: center;
     justify-content: center;
+    position: fixed;
+    pointer-events: auto;
+
 }
 
 /* ===========================
