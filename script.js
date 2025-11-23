@@ -7,33 +7,26 @@
 //   • "Fails" screen: model → tester → fail explanation
 //   • "Calculators" screen: pallet-count and end-of-day helpers
 //   • Simple hash-based navigation between tabs
-//
-// NOTE: Behaviour must stay identical. This is only a refactor with clearer
-// names, structure, and comments – no functional changes.
+//   • Visual transitions between screens + button press animation
 //
 
 // Main content container where templates are rendered
 const content = document.getElementById('content');
 
+// Track which screen is currently shown so we can animate direction
+let currentScreen = 'fails';
+
 // -------------------------------------
 // Data: defaults + optional JSON override
 // -------------------------------------
 
-// Default data used if spiders-data.json is missing.
-// spiders-data.json can override any of these values by merging on top.
 const DEFAULT_DATA = {
-    // NOTE: The shape of `models` is actually defined by spiders-data.json.
-    // This default is only a fallback and kept as-is for compatibility.
     models: ['Alpha', 'Beta', 'Gamma'],
-
-    // These are also fallback-only and may not be used if spiders-data.json
-    // provides its own full structure (models with testers/fails attached).
     testers: [
         { id: 'board', label: 'Board Tester' },
         { id: 'smoke', label: 'Smoke Box' },
         { id: 'function', label: 'Function Tester' }
     ],
-
     fails: {
         board: [
             {
@@ -72,8 +65,6 @@ const DEFAULT_DATA = {
             }
         ]
     },
-
-    // Calculator presets for pallet configuration
     calculatorModels: [
         { id: 'EI3016', label: 'EI3016', rows: 10, packs: 21, units: 4 },
         { id: 'EI3024', label: 'EI3024', rows: 12, packs: 20, units: 4 },
@@ -81,12 +72,10 @@ const DEFAULT_DATA = {
     ]
 };
 
-// This holds the merged data (defaults + any JSON override)
 let APP_DATA = DEFAULT_DATA;
 
 /**
  * Attempt to load spiders-data.json and merge it over DEFAULT_DATA.
- * If the file is missing or invalid we silently fall back to DEFAULT_DATA.
  */
 async function tryLoadData() {
     try {
@@ -94,61 +83,64 @@ async function tryLoadData() {
 
         if (res.ok) {
             const json = await res.json();
-            // Shallow merge – JSON overrides defaults where keys match.
             APP_DATA = { ...DEFAULT_DATA, ...json };
         }
     } catch (_) {
-        // Intentionally ignore errors – app continues with default data.
+        // Ignore and use defaults
     }
 }
 
-/**
- * Simple accessor so we always read from the resolved data.
- */
 function data() {
     return APP_DATA || DEFAULT_DATA;
 }
 
 // =====================================
-// "Fails" Screen
+// Button press animation helper
 // =====================================
 //
-// Flow: Model → Tester → Fail
-//   1. Choose a model (populates testers).
-//   2. Choose a tester (populates fails).
-//   3. Choose a fail (shows explanation).
+// Adds and removes a small "pressed" class for a nicer click/tap feeling.
 //
+
+function attachPressAnimation(element) {
+    if (!element) return;
+
+    const add = () => element.classList.add('is-pressed');
+    const remove = () => element.classList.remove('is-pressed');
+
+    element.addEventListener('mousedown', add);
+    element.addEventListener('mouseup', remove);
+    element.addEventListener('mouseleave', remove);
+
+    // Touch support for phones/tablets
+    element.addEventListener('touchstart', add, { passive: true });
+    element.addEventListener('touchend', remove);
+    element.addEventListener('touchcancel', remove);
+}
+
+// =====================================
+// "Fails" Screen
+// =====================================
 
 function initFails() {
     const appData = data();
 
-    // Grab all relevant elements from the freshly-rendered template
     const modelSelect = content.querySelector('#modelSelect');
     const testerSelect = content.querySelector('#testerSelect');
     const failSelect = content.querySelector('#failSelect');
     const explanation = content.querySelector('#failExplanation');
 
-    // ---------------------------------
-    // Step 1: Model dropdown
-    // ---------------------------------
-    // The expected shape is:
-    // appData.models = [{ id, label, testers: [...] }, ...]
     modelSelect.innerHTML =
         '<option value="" selected disabled>Select a model</option>' +
         appData.models
             .map(model => `<option value="${model.id}">${model.label}</option>`)
             .join('');
 
-    // When a model is selected, populate the "tester" dropdown
     modelSelect.addEventListener('change', () => {
         const selectedModel = appData.models.find(
             model => model.id === modelSelect.value
         );
         if (!selectedModel) return;
 
-        // -----------------------------
-        // Step 2: Tester dropdown
-        // -----------------------------
         testerSelect.innerHTML =
             '<option value="" selected disabled>Select a tester</option>' +
             selectedModel.testers
@@ -156,16 +148,12 @@ function initFails() {
                 .join('');
 
         testerSelect.disabled = false;
-
-        // Reset fail dropdown when model changes
         failSelect.disabled = true;
         failSelect.innerHTML =
             '<option value="" disabled selected>Select a fail</option>';
-
         explanation.textContent = 'Pick a tester next.';
     });
 
-    // When a tester is selected, populate the "fail" dropdown
     testerSelect.addEventListener('change', () => {
         const selectedModel = appData.models.find(
             model => model.id === modelSelect.value
@@ -179,13 +167,10 @@ function initFails() {
 
         const fails = selectedTester.fails || [];
 
-        // Group fails by optional "group" field: e.g. "Power", "Mechanical"...
         const groupedFails = {};
         for (const fail of fails) {
             const groupName = fail.group || 'Other';
-            if (!groupedFails[groupName]) {
-                groupedFails[groupName] = [];
-            }
+            if (!groupedFails[groupName]) groupedFails[groupName] = [];
             groupedFails[groupName].push(fail);
         }
 
@@ -217,7 +202,6 @@ function initFails() {
             : 'No fails found for this tester.';
     });
 
-    // When a fail is selected, show its explanation text
     failSelect.addEventListener('change', () => {
         const selectedModel = appData.models.find(
             model => model.id === modelSelect.value
@@ -240,54 +224,36 @@ function initFails() {
 // =====================================
 // Calculators Screen
 // =====================================
-//
-// There are two calculators (mini-tabs):
-//   • "Pallet Count" – How many full pallets + rows/packs/units from a partial pallet.
-//   • "End of Day"  – How many pallets go DTW and what the new open pallet looks like.
-//
-// Both calculators share:
-//   • Model presets (EI3016, EI3024, Generic, CUSTOM)
-//   • The same configuration numbers: rows, packs, units
-//
 
 function initCalculators() {
     const appData = data();
 
-    // Mini-tab buttons (Pallet Count / End of Day)
     const miniTabs = Array.from(
         content.querySelectorAll('.mini-tabs .tabbtn')
     );
-
-    // Elements for building the dynamic form and showing results
     const formContainer = content.querySelector('#calcForm');
     const calcButton = content.querySelector('#calcGo');
     const resultOutput = content.querySelector('#calcResult');
 
-    // Model selection
     const modelSelect = content.querySelector('#calcModel');
     const modelSummary = content.querySelector('#modelSummary');
 
-    // -----------------------
-    // Populate model dropdown
-    // -----------------------
+    // Button press animation for mini-tabs & calculate button
+    miniTabs.forEach(attachPressAnimation);
+    attachPressAnimation(calcButton);
+
     modelSelect.innerHTML =
         appData.calculatorModels
             .map(model => `<option value="${model.id}">${model.label}</option>`)
             .join('') +
         '<option value="CUSTOM">CUSTOM</option>';
 
-    // -----------------------
-    // Helper: which mini-tab is active?
-    // -----------------------
     function getActiveCalcType() {
         return miniTabs.find(
             button => button.getAttribute('aria-selected') === 'true'
         ).dataset.calc;
     }
 
-    // -----------------------
-    // Helper: set active mini-tab and render its form
-    // -----------------------
     function setActiveCalc(calcType) {
         miniTabs.forEach(button => {
             const isActive = button.dataset.calc === calcType;
@@ -298,21 +264,11 @@ function initCalculators() {
         applyModelPreset();
     }
 
-    // -----------------------
-    // Input helpers
-    // -----------------------
-
-    /**
-     * Ensure a number input only accepts whole digits.
-     * We keep it forgiving (you can paste) but clean it on input/blur.
-     */
     function enforceIntegerInput(element) {
-        // Strip non-digits as the user types
         element.addEventListener('input', () => {
             element.value = element.value.replace(/[^\d]/g, '');
         });
 
-        // On blur, clamp to minimum and floor the value
         element.addEventListener('blur', () => {
             if (element.value !== '') {
                 const min = Number(element.min || '0');
@@ -323,16 +279,12 @@ function initCalculators() {
         });
     }
 
-    /**
-     * Attach integer-only behaviour to all number inputs in the form.
-     */
     function wireInputs() {
         formContainer
             .querySelectorAll('input[type=number]')
             .forEach(enforceIntegerInput);
     }
 
-    // BigInt helpers – used so very large counts don't overflow.
     function readPositive(id) {
         const el = content.querySelector('#' + id);
         const value = el.value === '' ? NaN : Number(el.value);
@@ -358,10 +310,6 @@ function initCalculators() {
         return [a / b, a % b];
     }
 
-    /**
-     * Wrapper that catches errors and shows them in the result area,
-     * instead of throwing and killing the whole app.
-     */
     function safeRun(fn) {
         try {
             fn();
@@ -370,18 +318,8 @@ function initCalculators() {
         }
     }
 
-    // -----------------------
-    // Dynamic form rendering
-    // -----------------------
-
-    /**
-     * Render the form for the given calculator type:
-     *   • "pallet": Pallet Count
-     *   • "eod":    End of Day
-     */
     function renderForm(type) {
         if (type === 'pallet') {
-            // Pallet Count UI
             formContainer.innerHTML = `
                 <div id="cfg" class="row">
                   <div class="muted">Configuration</div>
@@ -409,7 +347,6 @@ function initCalculators() {
                 </div>
             `;
         } else {
-            // End-of-Day UI
             formContainer.innerHTML = `
                 <div id="cfg" class="row">
                   <div class="muted">Configuration</div>
@@ -439,11 +376,6 @@ function initCalculators() {
         resultOutput.textContent = 'Result will appear here.';
     }
 
-    /**
-     * Apply the selected model preset to the active calculator.
-     * For presets, configuration fields are filled and disabled.
-     * For CUSTOM, fields are enabled for manual input.
-     */
     function applyModelPreset() {
         const calcType = getActiveCalcType();
         const selectedModelId = modelSelect.value;
@@ -479,7 +411,6 @@ function initCalculators() {
                     `${model.label}. Rows: ${model.rows}, Packs: ${model.packs}, Units: ${model.units}`;
             }
         } else {
-            // End-of-Day uses the same model data fields
             const rowsInput = content.querySelector('#e_rows');
             const packsInput = content.querySelector('#e_packs');
             const unitsInput = content.querySelector('#e_units');
@@ -507,9 +438,6 @@ function initCalculators() {
         }
     }
 
-    // -----------------------
-    // Calculator logic: Pallet Count
-    // -----------------------
     function calcPallet() {
         const rowsPerPallet = readPositive('rowsPerPallet');
         const packsPerRow = readPositive('packsPerRow');
@@ -519,21 +447,16 @@ function initCalculators() {
         const packsInRow = readNonNegative('packsInRow');
         const looseUnits = readNonNegative('looseUnits');
 
-        // Turn loose units into packs where possible
         const carryPacks = unitsPerPack > 0n ? looseUnits / unitsPerPack : 0n;
         const unitsRemainder = unitsPerPack > 0n ? looseUnits % unitsPerPack : looseUnits;
 
-        // Combine packs in row + packs converted from loose units
         const totalPacksInRow = packsInRow + carryPacks;
 
-        // Turn overflow packs into full rows where possible
         const carryRows = packsPerRow > 0n ? totalPacksInRow / packsPerRow : 0n;
         const packsRemainder = packsPerRow > 0n ? totalPacksInRow % packsPerRow : totalPacksInRow;
 
-        // Total full rows on the pallet
         const totalFullRows = fullRows + carryRows;
 
-        // Derive total units and break it down into pallets/rows/packs/units
         const unitsPerRow = packsPerRow * unitsPerPack;
         const totalUnits =
             totalFullRows * unitsPerRow +
@@ -575,9 +498,6 @@ function initCalculators() {
         `;
     }
 
-    // -----------------------
-    // Calculator logic: End of Day (DTW)
-    // -----------------------
     function calcEod() {
         const rows = readPositive('e_rows');
         const packs = readPositive('e_packs');
@@ -596,20 +516,17 @@ function initCalculators() {
             return;
         }
 
-        // Reduce current units to a single pallet's worth
         const current = currentOnPallet % unitsPerPallet;
         const rate = todaysRate;
 
-        let palletsDTW = 0n;            // Pallets that went "Down To Warehouse"
-        let usedToCompleteFirst = 0n;   // Units used to complete the first pallet
-        let remainderAfter = 0n;        // Units left on the new open pallet
+        let palletsDTW = 0n;
+        let usedToCompleteFirst = 0n;
+        let remainderAfter = 0n;
 
         if (current > 0n) {
-            // We already have a partially filled pallet
             const needToFinish = unitsPerPallet - current;
 
             if (rate >= needToFinish) {
-                // We can finish the current pallet
                 palletsDTW = 1n;
                 usedToCompleteFirst = needToFinish;
 
@@ -619,18 +536,15 @@ function initCalculators() {
 
                 palletsDTW += extraPallets;
             } else {
-                // Not enough to finish the pallet: no pallet goes DTW
                 palletsDTW = 0n;
                 usedToCompleteFirst = 0n;
                 remainderAfter = current + rate;
             }
         } else {
-            // No open pallet – just build from zero
             [palletsDTW, remainderAfter] = divRem(rate, unitsPerPallet);
             usedToCompleteFirst = 0n;
         }
 
-        // Break remainderAfter back into rows/packs/units
         const [rowsAfter, afterRows] = divRem(remainderAfter, unitsPerRow);
         const [packsAfter, unitsAfter] = divRem(afterRows, units);
 
@@ -651,9 +565,6 @@ function initCalculators() {
         `;
     }
 
-    // -----------------------
-    // Dispatcher: run the correct calculator
-    // -----------------------
     function calculate() {
         safeRun(() => {
             const type = getActiveCalcType();
@@ -665,36 +576,20 @@ function initCalculators() {
         });
     }
 
-    // -----------------------
-    // Wire up events
-    // -----------------------
-
-    // Mini-tabs (Pallet Count vs End of Day)
     miniTabs.forEach(button => {
         button.addEventListener('click', () => {
             setActiveCalc(button.dataset.calc);
         });
     });
 
-    // Calculate button
     calcButton.addEventListener('click', calculate);
 
-    // When the model changes:
-    // Re-render the current calculator form and then apply
-    // the new preset so rows/packs/units update immediately.
     modelSelect.addEventListener('change', () => {
         renderForm(getActiveCalcType());
         applyModelPreset();
     });
 
-    // -----------------------
-    // Initial setup for calculators screen
-    // -----------------------
-
-    // Start with Pallet Count tab active
     setActiveCalc('pallet');
-
-    // Select the first model preset by default (if any), otherwise CUSTOM
     modelSelect.value = (appData.calculatorModels[0]?.id) || 'CUSTOM';
     applyModelPreset();
 }
@@ -703,18 +598,15 @@ function initCalculators() {
 // Bottom Navigation & Simple Routing
 // =====================================
 //
-// We use the URL hash to track which tab is active:
-//   #fails         → Fails screen
-//   #calculators   → Calculators screen
-//
-// Changing the hash (by clicking a tab or manually editing the URL)
-// will re-render the main <section id="content"> with the chosen template.
+// Adds slide/fade animation when switching between screens.
 //
 
-// Wire click handlers for bottom nav tabs
 document
     .querySelectorAll('nav.tabs .tabbtn')
     .forEach(button => {
+        // Button press animation for bottom nav
+        attachPressAnimation(button);
+
         button.addEventListener('click', () => {
             const target = button.dataset.target;
             location.hash = '#' + target;
@@ -723,21 +615,30 @@ document
     });
 
 /**
- * Load a given screen ("fails" or "calculators") by:
- *   1. Cloning the matching template.
- *   2. Inserting it into the content area.
- *   3. Marking the correct nav tab as active.
- *   4. Initialising that screen's JS.
+ * Load a given screen ("fails" or "calculators") with a small animation.
  */
 function load(name) {
     const tpl = document.getElementById('tpl-' + name);
     if (!tpl) return;
 
-    // Replace content with fresh copy of template
-    content.innerHTML = '';
-    content.appendChild(tpl.content.cloneNode(true));
+    // Decide direction of animation based on where we are and where we're going
+    let transitionClass = 'view--fade';
+    if (currentScreen === 'fails' && name === 'calculators') {
+        transitionClass = 'view--slide-up';
+    } else if (currentScreen === 'calculators' && name === 'fails') {
+        transitionClass = 'view--slide-down';
+    }
 
-    // Update tab aria-selected state
+    currentScreen = name;
+
+    // Wrap template content in a .view div so CSS can animate it
+    const wrapper = document.createElement('div');
+    wrapper.className = `view ${transitionClass}`;
+    wrapper.appendChild(tpl.content.cloneNode(true));
+
+    content.innerHTML = '';
+    content.appendChild(wrapper);
+
     document
         .querySelectorAll('nav.tabs .tabbtn')
         .forEach(button => {
@@ -745,17 +646,10 @@ function load(name) {
             button.setAttribute('aria-selected', String(isActive));
         });
 
-    // Initialise whichever screen we loaded
     if (name === 'fails') initFails();
     if (name === 'calculators') initCalculators();
 }
 
-/**
- * Global app initialisation:
- *   • Load/merge data.
- *   • Decide which tab to show from the current hash.
- *   • Listen for hash changes so back/forward works as expected.
- */
 async function init() {
     await tryLoadData();
 
@@ -765,6 +659,7 @@ async function init() {
     const validScreens = ['fails', 'calculators'];
     const initialScreen = validScreens.includes(hashName) ? hashName : 'fails';
 
+    currentScreen = initialScreen;
     load(initialScreen);
 
     window.addEventListener('hashchange', () => {
@@ -774,5 +669,4 @@ async function init() {
     });
 }
 
-// Kick everything off
 init();

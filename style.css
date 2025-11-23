@@ -1,6 +1,7 @@
-/* ===========================
-   AUTO LIGHT + DARK THEME
-   =========================== */
+/* ==========================================
+   THEME: Auto Light + Dark
+   ========================================== */
+
 :root {
     color-scheme: light dark;
 
@@ -34,14 +35,16 @@
     }
 }
 
-/* ===========================
-   BASE
-   =========================== */
+/* ==========================================
+   BASE / RESET
+   ========================================== */
+
 * {
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -56,14 +59,15 @@ html, body {
     flex-direction: column;
 }
 
-/* ===========================
+/* ==========================================
    HEADER
-   =========================== */
+   ========================================== */
+
 header {
     padding: 4px 0 2px;
     text-align: center;
     background: var(--bg);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .logo {
@@ -73,9 +77,10 @@ header {
     margin: 0 auto;
 }
 
-/* ===========================
-   MAIN CONTENT
-   =========================== */
+/* ==========================================
+   MAIN CONTENT AREA
+   ========================================== */
+
 main {
     flex: 1;
     display: flex;
@@ -84,6 +89,7 @@ main {
     padding: 8px;
 }
 
+/* Card that holds the current screen */
 .frame {
     width: 100%;
     max-width: 520px;
@@ -103,15 +109,32 @@ main {
     color: var(--muted);
 }
 
-/* Page transition: Fails <-> Calculators */
-#content > * {
-    animation: fadeSlideIn 200ms ease-out;
+/* ==========================================
+   SCREEN TRANSITIONS
+   ========================================== */
+
+.view {
+    animation-duration: 260ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
 }
 
-@keyframes fadeSlideIn {
+.view--slide-up {
+    animation-name: slide-up;
+}
+
+.view--slide-down {
+    animation-name: slide-down;
+}
+
+.view--fade {
+    animation-name: fade-in;
+}
+
+@keyframes slide-up {
     from {
         opacity: 0;
-        transform: translateY(6px);
+        transform: translateY(16px);
     }
     to {
         opacity: 1;
@@ -119,9 +142,30 @@ main {
     }
 }
 
-/* ===========================
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================
    FORM ELEMENTS
-   =========================== */
+   ========================================== */
+
 label {
     font-size: 13px;
     font-weight: 600;
@@ -132,15 +176,14 @@ label {
     gap: 6px;
 }
 
-/* Inputs & selects - Safari-friendly, no zoom */
 input[type=number],
 select {
     width: 100%;
-    font-size: 16px; /* >=16px prevents iOS zoom */
+    font-size: 16px;
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(0,0,0,0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.12);
     color: var(--fg);
 }
 
@@ -149,12 +192,10 @@ select:focus {
     outline: 2px solid var(--accent);
 }
 
-/* Show \n as new lines in fail explanations */
 #failExplanation {
     white-space: pre-line;
 }
 
-/* Calculator result spacing */
 #calcResult {
     margin-top: 4px;
     line-height: 1.4;
@@ -164,9 +205,10 @@ select:focus {
     margin: 2px 0;
 }
 
-/* ===========================
-   MINI TABS
-   =========================== */
+/* ==========================================
+   MINI TABS (inside Calculators)
+   ========================================== */
+
 .mini-tabs {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -179,60 +221,70 @@ select:focus {
     border-radius: 10px;
 }
 
-/* ===========================
-   BUTTONS + ANIMATIONS
-   =========================== */
+/* ==========================================
+   ACTION BUTTONS
+   ========================================== */
+
 .btnrow {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
+/* Base button style */
 .tabbtn {
     appearance: none;
     padding: 12px;
     font-size: 15px;
     font-weight: 700;
-    letter-spacing: .3px;
+    letter-spacing: 0.3px;
     width: 100%;
     border-radius: 12px;
     border: 2px solid #333;
     background: transparent;
     color: var(--fg);
-    cursor: pointer;
 
-    /* smooth hover/active transitions */
+    /* Smooth hover / press transitions */
     transition:
-        background 150ms ease,
-        border-color 150ms ease,
-        color 150ms ease,
-        transform 80ms ease,
-        box-shadow 150ms ease;
+        transform 120ms ease-out,
+        box-shadow 120ms ease-out,
+        background 120ms ease-out,
+        border-color 120ms ease-out,
+        color 120ms ease-out;
 }
 
-/* Selected state (bottom tabs + mini tabs) */
+/* Active tab */
 .tabbtn[aria-selected="true"] {
     background: var(--accent);
     border-color: var(--accent);
     color: var(--bg);
-    box-shadow: 0 0 10px rgba(237, 27, 36, 0.45);
 }
 
-/* Press / tap animation */
-.tabbtn:active {
-    transform: scale(0.97);
-    box-shadow: 0 0 4px rgba(237, 27, 36, 0.6);
+/* Pressed animation – class is toggled via JS */
+.tabbtn.is-pressed,
+#calcGo.is-pressed {
+    transform: scale(0.97) translateY(1px);
 }
 
-/* Secondary style (if used) */
+/* Optional hover (desktop only, feels nice) */
+@media (hover: hover) {
+    .tabbtn:hover,
+    #calcGo:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+    }
+}
+
+/* Secondary style (same visuals, semantic hook) */
 .btn-secondary {
     background: transparent;
     color: var(--fg);
 }
 
-/* ===========================
-   BOTTOM NAV
-   =========================== */
+/* ==========================================
+   BOTTOM NAVIGATION
+   ========================================== */
+
 nav.tabs {
     position: sticky;
     bottom: 0;
@@ -245,16 +297,18 @@ nav.tabs {
     border-top: 1px solid #333;
 }
 
-/* ===========================
+/* ==========================================
    ERROR TEXT
-   =========================== */
+   ========================================== */
+
 .err {
     color: #ff6b6b;
 }
 
-/* ===========================
-   TRUE HIDE CLASS
-   =========================== */
+/* ==========================================
+   UTILITY: .hidden
+   ========================================== */
+
 .hidden {
     display: none !important;
     height: 0 !important;
