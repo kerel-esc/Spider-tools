@@ -3,6 +3,8 @@
 A lightweight, mobile-friendly web application built to support Spiders, when manufacturing smoke sensors, CO₂ sensors, and other safety devices.
 This tool streamlines daily tasks, provides quick access to failure information, and simplifies palletization calculations during production.
 
+Access this website application on: https://kerel-esc.github.io/Spider-tools/
+
 🔧 1. Fail Lookup Tool
 
 Designed for rapid troubleshooting during production testing.
