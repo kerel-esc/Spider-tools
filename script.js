@@ -1108,4 +1108,11 @@ async function init() {
 
 document.addEventListener('DOMContentLoaded', () => {
     init();
+
+    
+document.getElementById('homeLogo').addEventListener('click', () => {
+    vibrate(10);
+    window.location.reload();   // Hard reload of the app
+});
+
 });
