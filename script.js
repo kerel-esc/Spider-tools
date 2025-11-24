@@ -12,7 +12,7 @@
 //   • PWA: install banner, version checker, About modal metadata
 //
 
-const APP_VERSION = '1.1.2';   // ⬅ UPDATED VERSION
+const APP_VERSION = '3.0.0';   // ⬅ UPDATED VERSION
 
 // Storage keys
 const STORAGE_KEYS = {

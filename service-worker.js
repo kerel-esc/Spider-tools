@@ -2,7 +2,7 @@
 // Spider Tools – CLEAN Service Worker (FINAL VERSION)
 // =====================================================
 
-const CACHE_NAME = 'spiders-v2.0.0';
+const CACHE_NAME = 'spiders-v3.0.0';
 
 // Only cache the app shell — NEVER the JSON
 const APP_SHELL = [
