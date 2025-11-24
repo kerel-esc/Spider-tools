@@ -1,5 +1,5 @@
 // Cache name (change version to force refresh)
-const CACHE_NAME = 'spiders-tools-v3-1.1.0';
+const CACHE_NAME = 'spiders-tools-v3-1.1.1';
 
 // Files to cache for offline use
 const FILES_TO_CACHE = [
@@ -23,7 +23,7 @@ self.addEventListener('install', (event) => {
 
       // Optionally cache fails-data.json
       try {
-        const respFails = await fetch('./fails-data.json', { cache: 'no-store' });
+        const respFails = await fetch('./fails-data.json');
         if (respFails.ok) {
           await cache.put('./fails-data.json', respFails.clone());
         }
@@ -33,7 +33,7 @@ self.addEventListener('install', (event) => {
 
       // Optionally cache calculator-data.json
       try {
-        const respCalc = await fetch('./calculator-data.json', { cache: 'no-store' });
+        const respCalc = await fetch('./calculator-data.json');
         if (respCalc.ok) {
           await cache.put('./calculator-data.json', respCalc.clone());
         }
