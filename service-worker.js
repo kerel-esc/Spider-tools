@@ -2,7 +2,7 @@
 // Spider Tools – CLEAN Service Worker (FINAL VERSION)
 // =====================================================
 
-const CACHE_NAME = 'spiders-v3.0.0';
+const CACHE_NAME = 'spiders-v3.0.1';
 
 // Only cache the app shell — NEVER the JSON
 const APP_SHELL = [
@@ -36,11 +36,10 @@ self.addEventListener('activate', event => {
 
 // Fetch handler
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+  const url = event.request.url;
 
-  // Allow any request containing the JSON filenames, INCLUDING versioned URLs
-  if (url.pathname.includes('fails-data.json') ||
-      url.pathname.includes('calculator-data.json')) {
+  // Always fetch JSON directly — never from cache
+  if (url.includes('fails-data.json') || url.includes('calculator-data.json')) {
     event.respondWith(fetch(event.request));
     return;
   }
@@ -57,6 +56,7 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
 
 
 // Allow skipWaiting
