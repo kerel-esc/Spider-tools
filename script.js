@@ -12,7 +12,7 @@
 //   • PWA: install banner, version checker, About modal metadata
 //
 
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.1.1';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -111,34 +111,42 @@ async function tryLoadData() {
 
     // Load fails-data.json
     try {
+        console.log('Fetching fails-data.json...');
         const res = await fetch('fails-data.json');
         if (res.ok) {
             const json = await res.json();
             if (Array.isArray(json.models)) {
                 models = json.models;
+                console.log('Loaded fails-data.json with', json.models.length, 'model(s)');
             }
             if (typeof json.version === 'string') {
                 failsVersion = json.version;
             }
+        } else {
+            console.warn('fails-data.json HTTP status:', res.status);
         }
-    } catch (_) {
-        // Ignore and keep defaults
+    } catch (e) {
+        console.warn('Failed to load fails-data.json, using defaults', e);
     }
 
     // Load calculator-data.json
     try {
+        console.log('Fetching calculator-data.json...');
         const res = await fetch('calculator-data.json');
         if (res.ok) {
             const json = await res.json();
             if (Array.isArray(json.calculatorModels)) {
                 calculatorModels = json.calculatorModels;
+                console.log('Loaded calculator-data.json with', json.calculatorModels.length, 'model(s)');
             }
             if (typeof json.version === 'string') {
                 calcVersion = json.version;
             }
+        } else {
+            console.warn('calculator-data.json HTTP status:', res.status);
         }
-    } catch (_) {
-        // Ignore and keep defaults
+    } catch (e) {
+        console.warn('Failed to load calculator-data.json, using defaults', e);
     }
 
     APP_DATA = {
@@ -149,6 +157,8 @@ async function tryLoadData() {
             calcVersion
         }
     };
+
+    console.log('Final APP_DATA meta:', APP_DATA.meta);
 }
 
 function data() {
@@ -238,7 +248,7 @@ function initFails() {
 
         testerSelect.disabled = false;
 
-        testers.forEach((tester, index) => {
+        testers.forEach((tester) => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'tester-btn';
@@ -256,9 +266,6 @@ function initFails() {
             });
 
             testerButtons.appendChild(btn);
-
-            // If this is the only tester and no saved state, we could auto-select, but
-            // for now we leave control to the user.
         });
     }
 
@@ -963,10 +970,6 @@ function setupUpdateBanner(registration) {
             }
         });
     });
-
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
-    });
 }
 
 if ('serviceWorker' in navigator) {
@@ -978,14 +981,16 @@ if ('serviceWorker' in navigator) {
             })
             .catch(err => console.error('Service Worker registration failed:', err));
     });
-// Handles page reload after SW update
-let refreshing = false;
+}
 
-navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (refreshing) return;
-    refreshing = true;
-    window.location.reload();
-});
+// Handles page reload after SW update (single controlled reload)
+let refreshing = false;
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+    });
 }
 
 // =====================================
@@ -1117,10 +1122,11 @@ async function init() {
 document.addEventListener('DOMContentLoaded', () => {
     init();
 
-
-document.getElementById('homeLogo').addEventListener('click', () => {
-    vibrate(10);
-    window.location.reload();   // Hard reload of the app
-});
-
+    const homeLogo = document.getElementById('homeLogo');
+    if (homeLogo) {
+        homeLogo.addEventListener('click', () => {
+            vibrate(10);
+            window.location.reload();   // Full reload as you requested
+        });
+    }
 });
