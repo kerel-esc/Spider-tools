@@ -109,25 +109,32 @@ async function tryLoadData() {
     let failsVersion = DEFAULT_DATA.meta.failsVersion;
     let calcVersion = DEFAULT_DATA.meta.calcVersion;
 
-    // Load fails-data.json (VERSIONED)
-    try {
-        console.log('Fetching fails-data.json...');
-        const res = await fetch(`fails-data.json?v=${APP_VERSION}`, { cache: 'no-store' });
-        if (res.ok) {
-            const json = await res.json();
-            if (Array.isArray(json.models)) {
-                models = json.models;
-                console.log('Loaded fails-data.json with', json.models.length, 'model(s)');
-            }
-            if (typeof json.version === 'string') {
-                failsVersion = json.version;
-            }
+// Load fails-data.json (safe version — prevents wiping data when JSON fails)
+try {
+    console.log('Fetching fails-data.json...');
+    const res = await fetch(`fails-data.json?v=${APP_VERSION}`, { cache: 'no-store' });
+
+    if (res.ok) {
+        const json = await res.json();
+
+        if (Array.isArray(json.models)) {
+            // Only overwrite if models array is valid
+            models = json.models;
+            console.log('Loaded fails-data.json with', json.models.length, 'model(s)');
         } else {
-            console.warn('fails-data.json HTTP status:', res.status);
+            console.warn("fails-data.json does not contain a valid 'models' array — keeping previous data");
         }
-    } catch (e) {
-        console.warn('Failed to load fails-data.json, using defaults', e);
+
+        if (typeof json.version === 'string') {
+            failsVersion = json.version;
+        }
+    } else {
+        console.warn("fails-data.json returned HTTP", res.status, "— keeping previous data");
     }
+} catch (e) {
+    console.warn("Error loading fails-data.json — keeping previous data instead of wiping", e);
+}
+
 
     // Load calculator-data.json (VERSIONED)
     try {
