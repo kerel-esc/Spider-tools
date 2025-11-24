@@ -12,7 +12,7 @@
 //   • PWA: install banner, version checker, About modal metadata
 //
 
-const APP_VERSION = '3.0.0';
+const APP_VERSION = '3.0.2';
 
 // Storage keys (only keep A2HS preference – no model/screen memory)
 const STORAGE_KEYS = {
