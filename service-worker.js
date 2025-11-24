@@ -2,7 +2,7 @@
 // Spider Tools – Service Worker
 // =====================================
 
-const CACHE_NAME = 'spiders-tools-v1.1.7';
+const CACHE_NAME = 'spiders-tools-v1.1.8'; // bumped version
 
 const FILES_TO_CACHE = [
   './',
@@ -10,31 +10,15 @@ const FILES_TO_CACHE = [
   './style.css',
   './script.js',
   './manifest.json',
-  './logo.png',
-  './fails-data.json',
-  './calculator-data.json'
+  './logo.png'
+  // ⛔ JSON files intentionally NOT cached here
 ];
 
-// Install: cache core files + data files
+// Install: cache core shell files only
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      await cache.addAll(FILES_TO_CACHE);
-
-      // Try to refresh JSON from network (optional, but nice if online)
-      try {
-        const failsRes = await fetch('./fails-data.json');
-        if (failsRes.ok) {
-          await cache.put('./fails-data.json', failsRes.clone());
-        }
-      } catch (_) {}
-
-      try {
-        const calcRes = await fetch('./calculator-data.json');
-        if (calcRes.ok) {
-          await cache.put('./calculator-data.json', calcRes.clone());
-        }
-      } catch (_) {}
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(FILES_TO_CACHE);
     })
   );
 
@@ -62,31 +46,19 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Network-first for JSON data files
+  // ⛔ Let JSON requests go straight to the network.
+  // Script.js already uses `cache: 'no-store'` and has its own fallback.
   if (
     url.pathname.endsWith('/fails-data.json') ||
     url.pathname.endsWith('/calculator-data.json') ||
     url.pathname.endsWith('fails-data.json') ||
     url.pathname.endsWith('calculator-data.json')
   ) {
-    event.respondWith(
-      fetch(event.request)
-        .then((res) => {
-          // Save latest copy into cache
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, res.clone());
-            return res;
-          });
-        })
-        .catch(() => {
-          // If offline or fetch fails, try cached version
-          return caches.match(event.request);
-        })
-    );
+    event.respondWith(fetch(event.request));
     return;
   }
 
-  // Cache-first for everything else
+  // Cache-first for everything else (app shell)
   event.respondWith(
     caches.match(event.request).then((cached) => {
       return (

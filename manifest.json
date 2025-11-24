@@ -1,6 +1,6 @@
 {
   "name": "Spider Tools",
-  "short_name": "Spiders",
+  "short_name": "Spider Tools",
   "description": "Tools for Spiders on the production line.",
   "start_url": "./index.html",
   "display": "standalone",
