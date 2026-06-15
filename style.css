@@ -1,0 +1,533 @@
+/* ==========================================
+   THEME: Auto Light + Dark
+   ========================================== */
+
+:root {
+    color-scheme: light dark;
+
+    --bg-light: #ffffff;
+    --fg-light: #000000;
+    --muted-light: #555;
+
+    --bg-dark: #000000;
+    --fg-dark: #ffffff;
+    --muted-dark: #bdbdbd;
+
+    --accent-light: #ED1B24;
+    --accent-dark: #ED1B24;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg: var(--bg-light);
+        --fg: var(--fg-light);
+        --muted: var(--muted-light);
+        --accent: var(--accent-light);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: var(--bg-dark);
+        --fg: var(--fg-dark);
+        --muted: var(--muted-dark);
+        --accent: var(--accent-dark);
+    }
+}
+
+/* ==========================================
+   BASE / RESET
+   ========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, Roboto, Segoe UI, Helvetica, Arial, sans-serif;
+}
+
+.app {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================
+   HEADER
+   ========================================== */
+
+header {
+    position: relative;
+    padding: 4px 0 2px;
+    text-align: center;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+    width: clamp(40px, 18vw, 70px);
+    height: auto;
+    display: inline-block;
+}
+
+/* ==========================================
+   MAIN CONTENT AREA
+   ========================================== */
+
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 8px;
+}
+
+/* Card that holds the current screen */
+.frame {
+    width: 100%;
+    max-width: 520px;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.frame h2 {
+    margin-top: 0;
+    font-size: 19px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+/* ==========================================
+   SCREEN TRANSITIONS
+   ========================================== */
+
+.view {
+    animation-duration: 260ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+}
+
+.view--slide-up {
+    animation-name: slide-up;
+}
+
+.view--slide-down {
+    animation-name: slide-down;
+}
+
+.view--fade {
+    animation-name: fade-in;
+}
+
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   FORM ELEMENTS
+   ========================================== */
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.row {
+    display: grid;
+    gap: 6px;
+}
+
+input[type=number],
+select {
+    width: 100%;
+    font-size: 16px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.12);
+    color: var(--fg);
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid var(--accent);
+}
+
+#failExplanation {
+    white-space: pre-line;
+}
+
+#calcResult {
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+#calcResult p {
+    margin: 2px 0;
+}
+
+/* ==========================================
+   MINI TABS (inside Calculators)
+   ========================================== */
+
+.mini-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.mini-tabs .tabbtn {
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+/* ==========================================
+   ACTION BUTTONS
+   ========================================== */
+
+.btnrow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Base button style */
+.tabbtn {
+    appearance: none;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    width: 100%;
+    border-radius: 12px;
+    border: 2px solid #333;
+    background: transparent;
+    color: var(--fg);
+
+    transition:
+        transform 220ms ease-out,
+        box-shadow 220ms ease-out,
+        background 220ms ease-out,
+        border-color 220ms ease-out,
+        color 220ms ease-out;
+}
+
+/* Active tab */
+.tabbtn[aria-selected="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+}
+
+/* Pressed animation – class is toggled via JS */
+.tabbtn.is-pressed,
+#calcGo.is-pressed {
+    transform: scale(0.97) translateY(1px);
+}
+
+/* Optional hover (desktop only) */
+@media (hover: hover) {
+    .tabbtn:hover,
+    #calcGo:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+    }
+}
+
+/* Secondary style */
+.btn-secondary {
+    background: transparent;
+    color: var(--fg);
+}
+
+/* ==========================================
+   BOTTOM NAVIGATION
+   ========================================== */
+
+nav.tabs {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid #333;
+}
+
+/* ==========================================
+   ERROR TEXT
+   ========================================== */
+
+.err {
+    color: #ff6b6b;
+}
+
+/* ==========================================
+   UTILITY: .hidden
+   ========================================== */
+
+.hidden {
+    display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+}
+
+/* ==========================================
+   VISUALLY HIDDEN (ACCESSIBILITY)
+   ========================================== */
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    border: 0 !important;
+}
+
+/* ===========================
+   Fail Search Area
+   =========================== */
+
+.fail-search {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255 255 255 / 0.1);
+}
+
+#failSearchInput {
+    width: 100%;
+    font-size: 16px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255 255 255 / 0.12);
+    background: rgba(0, 0, 0, 0.12);
+    color: var(--fg);
+    margin-bottom: 10px;
+}
+
+#failSearchResults {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+/* Each search result */
+
+.search-result {
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255 255 255 / 0.12);
+    cursor: pointer;
+
+    transition: all 120ms ease;
+}
+
+.search-result:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.12);
+}
+
+.search-result strong {
+    display: block;
+    font-size: 15px;
+}
+
+.search-result small {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* ==========================================
+   Tester Buttons (grouped visually)
+   ========================================== */
+
+.tester-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.tester-buttons .tester-btn {
+    flex: 1 1 auto;
+    min-width: 80px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background: rgba(0,0,0,0.12);
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        transform 160ms ease-out,
+        box-shadow 160ms ease-out,
+        background 160ms ease-out,
+        border-color 160ms ease-out;
+}
+
+.tester-buttons .tester-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+}
+
+/* ==========================================
+   Floating Info Button
+   ========================================== */
+
+.floating-info-btn {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================
+   Modal Styling
+   ========================================== */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+}
+
+.modal-content {
+    background: var(--bg);
+    color: var(--fg);
+    width: 90%;
+    max-width: 380px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+}
+
+.about-meta {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* ==========================================
+   Banners (Update & Install)
+   ========================================== */
+
+.update-banner,
+.install-banner {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 6px 10px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.update-banner {
+    background: #2e7d32;
+    color: #ffffff;
+}
+
+.install-banner {
+    background: #1f1f1f;
+    color: #ffffff;
+}
+
+.banner-btn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.install-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Ensure banners sit under header visually */
+#updateBanner,
+#installBanner {
+    box-sizing: border-box;
+}
+
+/* Small tweak for code in about section */
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+}

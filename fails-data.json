@@ -1,0 +1,308 @@
+{
+  "version": "3.0.0",
+  "models": [
+    {
+      "id": "MX100",
+      "label": "Model A",
+      "testers": [
+        {
+          "id": "core",
+          "label": "Core Tester",
+          "fails": [
+            {
+              "id": "c12",
+              "label": "C12",
+              "group": "Capacitors",
+              "info": "Possible solutions in order:\n➜ Replace C12\n➜ Replace IC1\n➜ Inspect rail stability"
+            },
+            {
+              "id": "r4",
+              "label": "R4",
+              "group": "Resistors",
+              "info": "Possible solutions in order:\n➜ Replace R4\n➜ Check divider circuit\n➜ Inspect for shorts"
+            }
+          ]
+        },
+        {
+          "id": "power",
+          "label": "Power Tester",
+          "fails": [
+            {
+              "id": "drop",
+              "label": "Voltage Drop",
+              "info": "Possible solutions in order:\n➜ Check connectors\n➜ Replace regulator\n➜ Inspect traces"
+            }
+          ]
+        },
+        {
+          "id": "signal",
+          "label": "Signal Tester",
+          "fails": [
+            {
+              "id": "noise",
+              "label": "Noise",
+              "info": "Possible solutions in order:\n➜ Improve grounding\n➜ Replace filter cap\n➜ Shield setup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MX110",
+      "label": "Model B",
+      "testers": [
+        {
+          "id": "core",
+          "label": "Core Tester",
+          "fails": [
+            {
+              "id": "ic3",
+              "label": "IC3",
+              "group": "ICs",
+              "info": "Possible solutions in order:\n➜ Re-seat IC3\n➜ Replace IC3\n➜ Inspect pins"
+            }
+          ]
+        },
+        {
+          "id": "environment",
+          "label": "Environment Tester",
+          "fails": [
+            {
+              "id": "temp",
+              "label": "Temp Drift",
+              "info": "Possible solutions in order:\n➜ Recalibrate\n➜ Replace sensor\n➜ Check airflow"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZX200",
+      "label": "Model C",
+      "testers": [
+        {
+          "id": "power",
+          "label": "Power Tester",
+          "fails": [
+            {
+              "id": "spike",
+              "label": "Voltage Spike",
+              "info": "Possible solutions in order:\n➜ Add filter\n➜ Replace caps\n➜ Inspect ground"
+            }
+          ]
+        },
+        {
+          "id": "signal",
+          "label": "Signal Tester",
+          "fails": [
+            {
+              "id": "loss",
+              "label": "Signal Loss",
+              "info": "Possible solutions in order:\n➜ Check path\n➜ Replace buffer\n➜ Inspect connectors"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZX210",
+      "label": "Model D",
+      "testers": [
+        {
+          "id": "core",
+          "label": "Core Tester",
+          "fails": [
+            {
+              "id": "l2",
+              "label": "L2",
+              "group": "Inductors",
+              "info": "Possible solutions in order:\n➜ Replace L2\n➜ Inspect switching circuit\n➜ Check continuity"
+            }
+          ]
+        },
+        {
+          "id": "environment",
+          "label": "Environment Tester",
+          "fails": [
+            {
+              "id": "humidity",
+              "label": "Humidity Fault",
+              "info": "Possible solutions in order:\n➜ Dry unit\n➜ Reseal\n➜ Replace sensor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QF300",
+      "label": "Model E",
+      "testers": [
+        {
+          "id": "power",
+          "label": "Power Tester",
+          "fails": [
+            {
+              "id": "unstable",
+              "label": "Unstable Output",
+              "info": "Possible solutions in order:\n➜ Replace regulator\n➜ Inspect caps\n➜ Check load"
+            }
+          ]
+        },
+        {
+          "id": "signal",
+          "label": "Signal Tester",
+          "fails": [
+            {
+              "id": "distort",
+              "label": "Distortion",
+              "info": "Possible solutions in order:\n➜ Replace amp\n➜ Check impedance\n➜ Retest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QF310",
+      "label": "Model F",
+      "testers": [
+        {
+          "id": "core",
+          "label": "Core Tester",
+          "fails": [
+            {
+              "id": "c7",
+              "label": "C7",
+              "group": "Capacitors",
+              "info": "Possible solutions in order:\n➜ Replace C7\n➜ Inspect rail\n➜ Replace IC2"
+            }
+          ]
+        },
+        {
+          "id": "power",
+          "label": "Power Tester",
+          "fails": [
+            {
+              "id": "low",
+              "label": "Low Voltage",
+              "info": "Possible solutions in order:\n➜ Retest\n➜ Replace PSU\n➜ Inspect wiring"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TR400",
+      "label": "Model G",
+      "testers": [
+        {
+          "id": "signal",
+          "label": "Signal Tester",
+          "fails": [
+            {
+              "id": "delay",
+              "label": "Signal Delay",
+              "info": "Possible solutions in order:\n➜ Replace controller\n➜ Check timing\n➜ Inspect clock"
+            }
+          ]
+        },
+        {
+          "id": "environment",
+          "label": "Environment Tester",
+          "fails": [
+            {
+              "id": "heat",
+              "label": "Overheat",
+              "info": "Possible solutions in order:\n➜ Improve cooling\n➜ Replace sensor\n➜ Inspect vents"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TR410",
+      "label": "Model H",
+      "testers": [
+        {
+          "id": "core",
+          "label": "Core Tester",
+          "fails": [
+            {
+              "id": "u1",
+              "label": "U1",
+              "group": "ICs",
+              "info": "Possible solutions in order:\n➜ Replace U1\n➜ Inspect traces\n➜ Retest"
+            }
+          ]
+        },
+        {
+          "id": "power",
+          "label": "Power Tester",
+          "fails": [
+            {
+              "id": "surge",
+              "label": "Power Surge",
+              "info": "Possible solutions in order:\n➜ Add protection\n➜ Replace regulator\n➜ Check grounding"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NV500",
+      "label": "Model I",
+      "testers": [
+        {
+          "id": "environment",
+          "label": "Environment Tester",
+          "fails": [
+            {
+              "id": "sensor",
+              "label": "Sensor Failure",
+              "info": "Possible solutions in order:\n➜ Replace sensor\n➜ Check wiring\n➜ Restart system"
+            }
+          ]
+        },
+        {
+          "id": "signal",
+          "label": "Signal Tester",
+          "fails": [
+            {
+              "id": "dropout",
+              "label": "Signal Dropout",
+              "info": "Possible solutions in order:\n➜ Check connectors\n➜ Replace module\n➜ Retest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NV510",
+      "label": "Model J",
+      "testers": [
+        {
+          "id": "core",
+          "label": "Core Tester",
+          "fails": [
+            {
+              "id": "r11",
+              "label": "R11",
+              "group": "Resistors",
+              "info": "Possible solutions in order:\n➜ Replace R11\n➜ Inspect divider\n➜ Check shorts"
+            }
+          ]
+        },
+        {
+          "id": "power",
+          "label": "Power Tester",
+          "fails": [
+            {
+              "id": "failstart",
+              "label": "Startup Failure",
+              "info": "Possible solutions in order:\n➜ Check PSU\n➜ Replace IC\n➜ Inspect circuit"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

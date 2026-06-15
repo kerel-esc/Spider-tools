@@ -1,0 +1,171 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\calculator-data.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:calculator-data.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\fails-data.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:fails-data.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\service-worker.js||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:service-worker.js||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\script.js||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:script.js||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\favicon.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:favicon.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\logo.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:logo.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\manifest.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:manifest.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "logo.png",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\logo.png",
+              "RelativeDocumentMoniker": "logo.png",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\logo.png",
+              "RelativeToolTip": "logo.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2026-06-15T14:33:57.65Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "index.html",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\index.html",
+              "RelativeDocumentMoniker": "index.html",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\index.html",
+              "RelativeToolTip": "index.html",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-06-15T14:33:43.429Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "manifest.json",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\manifest.json",
+              "RelativeDocumentMoniker": "manifest.json",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\manifest.json",
+              "RelativeToolTip": "manifest.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-06-15T14:33:37.367Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "script.js",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\script.js",
+              "RelativeDocumentMoniker": "script.js",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\script.js",
+              "RelativeToolTip": "script.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-06-15T14:33:34.042Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "service-worker.js",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\service-worker.js",
+              "RelativeDocumentMoniker": "service-worker.js",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\service-worker.js",
+              "RelativeToolTip": "service-worker.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-06-15T14:33:33.13Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "readme.md",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\readme.md",
+              "RelativeDocumentMoniker": "readme.md",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\readme.md",
+              "RelativeToolTip": "readme.md",
+              "ViewState": "AgIAANcAAAAAAAAAAAAswAgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-06-15T14:33:26.9Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "favicon.ico -  [English (United Kingdom)] - Icon [16x16, 32 bit, BMP]",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\favicon.ico",
+              "RelativeDocumentMoniker": "favicon.ico",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\favicon.ico -  [English (United Kingdom)] - Icon [16x16, 32 bit, BMP]",
+              "RelativeToolTip": "favicon.ico -  [English (United Kingdom)] - Icon [16x16, 32 bit, BMP]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001525|",
+              "WhenOpened": "2026-06-15T14:33:20.528Z",
+              "EditorCaption": " -  [English (United Kingdom)] - Icon [16x16, 32 bit, BMP]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "fails-data.json",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\fails-data.json",
+              "RelativeDocumentMoniker": "fails-data.json",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\fails-data.json",
+              "RelativeToolTip": "fails-data.json",
+              "ViewState": "AgIAAPMAAAAAAAAAAAAkwDMBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-06-15T14:33:15.585Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "calculator-data.json",
+              "DocumentMoniker": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\calculator-data.json",
+              "RelativeDocumentMoniker": "calculator-data.json",
+              "ToolTip": "C:\\Users\\ik3r3\\Documents\\Spider-tools-main\\Spider-tools-main\\calculator-data.json",
+              "RelativeToolTip": "calculator-data.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAG0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-06-15T14:33:11.608Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

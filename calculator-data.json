@@ -1,0 +1,110 @@
+{
+  "version": "3.0.0",
+  "calculatorModels": [
+    {
+      "id": "MX100",
+      "label": "Model A",
+      "rows": 12,
+      "packs": 18,
+      "units": 5
+    },
+    {
+      "id": "MX110",
+      "label": "Model B",
+      "rows": 10,
+      "packs": 20,
+      "units": 4
+    },
+    {
+      "id": "ZX200",
+      "label": "Model C",
+      "rows": 14,
+      "packs": 16,
+      "units": 6
+    },
+    {
+      "id": "ZX210",
+      "label": "Model D",
+      "rows": 11,
+      "packs": 19,
+      "units": 5
+    },
+    {
+      "id": "QF300",
+      "label": "Model E",
+      "rows": 9,
+      "packs": 22,
+      "units": 4
+    },
+    {
+      "id": "QF310",
+      "label": "Model F",
+      "rows": 13,
+      "packs": 17,
+      "units": 6
+    },
+    {
+      "id": "TR400",
+      "label": "Model G",
+      "rows": 8,
+      "packs": 24,
+      "units": 3
+    },
+    {
+      "id": "TR410",
+      "label": "Model H",
+      "rows": 15,
+      "packs": 15,
+      "units": 6
+    },
+    {
+      "id": "NV500",
+      "label": "Model I",
+      "rows": 10,
+      "packs": 21,
+      "units": 5
+    },
+    {
+      "id": "NV510",
+      "label": "Model J",
+      "rows": 12,
+      "packs": 18,
+      "units": 5
+    },
+    {
+      "id": "AL600",
+      "label": "Model K",
+      "rows": 11,
+      "packs": 20,
+      "units": 4
+    },
+    {
+      "id": "AL610",
+      "label": "Model L",
+      "rows": 13,
+      "packs": 17,
+      "units": 6
+    },
+    {
+      "id": "PX700",
+      "label": "Model M",
+      "rows": 9,
+      "packs": 23,
+      "units": 4
+    },
+    {
+      "id": "PX710",
+      "label": "Model N",
+      "rows": 14,
+      "packs": 16,
+      "units": 6
+    },
+    {
+      "id": "LK800",
+      "label": "Model O",
+      "rows": 10,
+      "packs": 21,
+      "units": 5
+    }
+  ]
+}
